@@ -3,75 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Fixed</title>
+    <title>Wellness Partners | Fixed Forever</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
-        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
-        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
-        #status-display { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
+        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
+        .btn-call { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
+        .btn-call:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+        #status-log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
-    <div class="glass shadow-2xl">
-        <h1 class="text-3xl font-bold mb-1 tracking-tight">Wellness Partners</h1>
+    <div class="card shadow-2xl">
+        <h1 class="text-3xl font-bold mb-1 tracking-tight">WELLNESS PARTNERS</h1>
         <p class="text-slate-400 mb-8 text-sm italic">AI Assistant: Riley</p>
 
-        <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase w-full" disabled>
+        <button id="callBtn" onclick="toggleCall()" class="btn-call uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="status-display">System: Connecting...</div>
+        <div id="status-log">Status: Syncing with AI network...</div>
     </div>
 
     <script>
-        // VERIFIED CREDENTIALS
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
+        let isCalling = false;
 
-        function updateLog(msg) {
-            document.getElementById('status-display').innerText = "Status: " + msg;
-        }
+        function log(msg) { document.getElementById('status-log').innerText = "Status: " + msg; }
 
-        // This loop keeps running until Safari stops blocking the library
-        function forceBoot() {
+        // The Self-Healing Loop: Retries until the firewall breaks
+        function startEngine() {
             if (window.Vapi) {
                 try {
                     vapi = new Vapi(publicApiKey);
-                    updateLog("RILEY ONLINE.");
-                    const btn = document.getElementById('mainBtn');
+                    log("RILEY ONLINE.");
+                    const btn = document.getElementById('callBtn');
                     btn.disabled = false;
                     btn.innerText = "Talk to Riley";
                     
-                    vapi.on('call-start', () => { btn.innerText = "Riley is Speaking..."; });
-                    vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
-                } catch (e) {
-                    updateLog("Configuration error.");
-                }
+                    vapi.on('call-start', () => { 
+                        isCalling = true;
+                        btn.innerText = "Riley is Listening..."; 
+                    });
+                    
+                    vapi.on('call-end', () => { 
+                        isCalling = false;
+                        btn.innerText = "Talk to Riley"; 
+                    });
+                } catch (e) { log("System Error. Reloading..."); }
             } else {
-                updateLog("Bypassing firewall... Please wait.");
-                setTimeout(forceBoot, 1000); // Check every second
+                log("Bypassing Safari Firewall...");
+                setTimeout(startEngine, 1000); // Forced retry every second
             }
         }
 
-        async function startRiley() {
-            try {
-                // Request microphone access
-                await navigator.mediaDevices.getUserMedia({ audio: true });
-                vapi.start(assistantId);
-            } catch (e) {
-                alert("Please click the URL bar icon and select 'Allow' for Microphone.");
+        async function toggleCall() {
+            if (isCalling) {
+                vapi.stop();
+            } else {
+                try {
+                    // Force a mic check for Safari
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    vapi.start(assistantId);
+                } catch (e) {
+                    alert("Microphone Blocked! Click the 'AA' or Lock icon in the URL bar and select 'Allow Microphone'.");
+                }
             }
         }
 
-        // Trigger the permanent boot loop
-        forceBoot();
+        window.onload = startEngine;
     </script>
 </body>
 </html>

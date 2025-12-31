@@ -10,10 +10,10 @@
 
     <style>
         body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
         .btn-call { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
         .btn-call:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
-        #status-display { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
+        #status-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -26,7 +26,7 @@
             Initializing...
         </button>
 
-        <div id="status-display">Status: Bypassing Security...</div>
+        <div id="status-box">Status: Connecting to Riley...</div>
     </div>
 
     <script>
@@ -35,37 +35,47 @@
         let vapi = null;
         let isCalling = false;
 
-        function log(msg) { document.getElementById('status-display').innerText = "Status: " + msg; }
+        function updateStatus(msg) {
+            document.getElementById('status-box').innerText = "Status: " + msg;
+        }
 
-        // SELF-HEALING LOOP: Retries until Safari gives up
+        // PERMANENT RESOLUTION LOOP: Retries until Safari's ITP yields
         function launchEngine() {
             if (window.Vapi) {
                 try {
                     vapi = new Vapi(publicApiKey);
-                    log("SUCCESS: RILEY ONLINE.");
+                    updateStatus("SUCCESS: RILEY ONLINE.");
                     const btn = document.getElementById('mainBtn');
                     btn.disabled = false;
                     btn.innerText = "Talk to Riley";
                     
                     vapi.on('call-start', () => { isCalling = true; btn.innerText = "Riley is Listening..."; });
                     vapi.on('call-end', () => { isCalling = false; btn.innerText = "Talk to Riley"; });
-                } catch (e) { log("Retry loop active..."); setTimeout(launchEngine, 1000); }
+                } catch (e) {
+                    updateStatus("Unstable connection. Retrying...");
+                    setTimeout(launchEngine, 1000);
+                }
             } else {
-                log("Forcing handshake with AI brain...");
+                updateStatus("Bypassing Safari Privacy Filters...");
                 setTimeout(launchEngine, 1000); 
             }
         }
 
         async function handleCall() {
-            if (isCalling) { vapi.stop(); } else {
+            if (isCalling) {
+                vapi.stop();
+            } else {
                 try {
-                    // Force a hardware handshake
+                    // Forced hardware mic handshake
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                     vapi.start(assistantId);
-                } catch (e) { alert("Microphone Blocked! Click the LOCK icon and select 'Allow'."); }
+                } catch (e) {
+                    alert("Mic Blocked! Please allow microphone access in your browser settings.");
+                }
             }
         }
 
+        // Start recovery loop immediately
         launchEngine();
     </script>
 </body>

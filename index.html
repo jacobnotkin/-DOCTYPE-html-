@@ -39,15 +39,15 @@
         // This function detects when the library arrives
         function setupRiley() {
             if (window.Vapi) {
-                console.log("AI Library Loaded!");
+                console.log("AI Library Loaded Successfully!");
                 vapi = new Vapi(publicApiKey);
                 
                 const btn = document.getElementById('s6');
                 btn.disabled = false;
-                btn.innerText = "Start Connection"; // Turns Orange
+                btn.innerText = "Start Connection"; // This turns the button active
                 document.getElementById('status').innerText = "System: Ready";
 
-                // Voice Event Listeners
+                // Listeners for Riley starting
                 vapi.on('call-start', () => {
                     btn.innerText = "Riley is Speaking...";
                     document.getElementById('status').innerText = "System: Live";
@@ -58,7 +58,7 @@
                     document.getElementById('status').innerText = "System: Ready";
                 });
             } else {
-                // If the typo is still there, it will keep waiting here
+                // Keep checking every half-second until the typo is fixed and it loads
                 setTimeout(setupRiley, 500);
             }
         }

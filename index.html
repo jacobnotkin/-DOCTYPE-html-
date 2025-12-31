@@ -3,88 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | AI Control Center</title>
+    <title>Wellness Partners | AI System</title>
     
-    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js?v=2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: radial-gradient(circle at 50% 50%, #111827 0%, #06080f 100%); min-height: 100vh; color: #e2e8f0; font-family: sans-serif; display: flex; align-items: center; justify-content: center; margin: 0; }
-        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; width: 100%; max-width: 500px; padding: 48px; text-align: center; }
-        .orange-btn { background: #f97316; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; cursor: pointer; }
-        .orange-btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(249, 115, 22, 0.2); }
-        .orange-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .dot-offline { background: #ef4444; }
-        .dot-online { background: #10b981; }
+        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        .card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px); padding: 48px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; }
+        .btn { background: #f97316; width: 100%; padding: 20px; border-radius: 16px; font-weight: 900; font-size: 1.2rem; transition: 0.3s; cursor: pointer; border: none; color: white; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
+        .btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+        .btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
-    <div class="glass-panel shadow-2xl">
-        <div class="mb-10">
-            <span class="text-orange-500 font-bold tracking-[0.3em] text-[10px] uppercase">System v2.2 Active</span>
-            <h1 class="text-4xl font-black mt-2 text-white tracking-tight">Wellness Partners</h1>
-            <p class="text-slate-400 mt-3 text-lg font-medium">Riley: AI Scheduling Agent</p>
-        </div>
+    <div class="card shadow-2xl">
+        <h1 class="text-4xl font-black mb-1 uppercase tracking-tighter">Wellness Partners</h1>
+        <p class="text-slate-400 mb-10 font-medium italic">Riley is your AI scheduling assistant.</p>
 
-        <button id="s6" onclick="runTest()" class="orange-btn w-full py-5 rounded-2xl text-white font-black text-xl shadow-lg uppercase tracking-tighter" disabled>
-            Initializing System...
+        <button id="s6" onclick="runTest()" class="btn uppercase tracking-tight" disabled>
+            Initializing...
         </button>
 
-        <div class="mt-8 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            <span id="status-dot" class="status-dot dot-offline"></span>
-            System Status: <span id="status-text" class="ml-1 text-slate-400">Loading Nodes...</span>
-        </div>
+        <p id="status" class="mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">System: Checking Connection</p>
     </div>
 
     <script>
-        // YOUR UNIQUE VAPI CREDENTIALS
+        // Verified Credentials
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
 
-        let vapiInstance = null;
+        let vapi = null;
 
-        // FAIL-SAFE INITIALIZER: Waits for the SDK to be defined
-        function initSystem() {
+        // This function ensures Vapi exists before doing anything
+        function startEngine() {
             if (window.Vapi) {
-                console.log("SDK Found. Initializing Riley...");
-                vapiInstance = new Vapi(publicApiKey);
+                console.log("Vapi SDK Found. Initializing...");
+                vapi = new Vapi(publicApiKey);
                 
-                // Unlock UI
                 const btn = document.getElementById('s6');
                 btn.disabled = false;
                 btn.innerText = "Start Connection";
-                
-                document.getElementById('status-dot').className = "status-dot dot-online";
-                document.getElementById('status-text').innerText = "Online & Ready";
+                document.getElementById('status').innerText = "System: Online & Ready";
 
-                // Audio Event Listeners
-                vapiInstance.on('call-start', () => {
+                // Visual feedback for the call
+                vapi.on('call-start', () => {
                     btn.innerText = "Riley is Speaking...";
-                    document.getElementById('status-text').innerText = "Live Connection";
+                    document.getElementById('status').innerText = "System: Live";
                 });
 
-                vapiInstance.on('call-end', () => {
+                vapi.on('call-end', () => {
                     btn.innerText = "Start Connection";
-                    document.getElementById('status-text').innerText = "Ready for Test";
+                    document.getElementById('status').innerText = "System: Ready";
                 });
             } else {
-                // If library isn't loaded, check again in 500ms
-                setTimeout(initSystem, 500);
+                // If the library is still loading, wait 300ms and check again
+                setTimeout(startEngine, 300);
             }
         }
 
-        // CONNECT BUTTON FUNCTION
         function runTest() {
-            if (vapiInstance) {
-                console.log("Bridging to local nodes... Connecting Riley.");
-                vapiInstance.start(assistantId);
+            if (vapi) {
+                console.log("Calling Riley...");
+                vapi.start(assistantId);
+            } else {
+                alert("The AI engine is still warming up. Please refresh and wait 3 seconds.");
             }
         }
 
-        // Boot the system
-        initSystem();
+        // Start the check loop immediately
+        startEngine();
     </script>
 </body>
 </html>

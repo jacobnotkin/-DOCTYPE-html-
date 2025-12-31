@@ -6,6 +6,7 @@
     <title>AIVoiceINFRA | Small Business Control Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi.js"></script>
     <style>
         :root { --p-orange: #f97316; --p-blue: #3b82f6; }
         body { 
@@ -115,7 +116,7 @@
                 <p class="text-slate-400 text-base md:text-lg mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
                     The autonomous infrastructure that bridges local businesses to sophisticated AI Voice Agents.
                 </p>
-                <button onclick="triggerModal(1)" class="orange-btn px-10 py-5 rounded-2xl shadow-xl w-full md:w-auto">Start Connection</button>
+                <button onclick="startFullConnection()" class="orange-btn px-10 py-5 rounded-2xl shadow-xl w-full md:w-auto">Start Connection</button>
             </div>
 
             <div class="lg:col-span-2">
@@ -154,31 +155,12 @@
         <div class="gemini-sig">Designed By <span>Google Gemini</span></div>
     </div>
 
-  <script>
-  // Your IDs are already correctly placed here
-  const assistant = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
-  const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
-
-  // Initialize Vapi
-  const vapi = new Vapi(apiKey);
-
-  // This connects your "START CONNECTION" button
-  function runTest() {
-    console.log("Starting AI Voice Assistant...");
-    vapi.start(assistant);
-  }
-
-  // Optional: Change button text when active
-  vapi.on('call-start', () => {
-    document.getElementById('s6').innerText = "SYSTEM ACTIVE";
-  });
-
-  vapi.on('call-end', () => {
-    document.getElementById('s6').innerText = "06 TEST READY";
-  });
-</script>
-
     <script>
+        // VAPI INITIALIZATION
+        const assistant = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
+        const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
+        const vapi = new Vapi(apiKey);
+
         const selections = { region: "", industry: "", role: "", brand: "", voice: "" };
         const menus = {
             1: { t: "Select Market", k: "region", opts: ["United States", "United Kingdom", "Canada", "Global"] },
@@ -186,6 +168,13 @@
             3: { t: "Agent Role", k: "role", opts: ["Front Desk", "Sales Desk", "Support", "Scheduling"] },
             5: { t: "Voice Persona", k: "voice", opts: ["Warm & Helpful", "Clear Authority", "Casual Friendly"] }
         };
+
+        // NEW: This starts Riley AND opens the first menu
+        function startFullConnection() {
+            console.log("Starting AI Voice Assistant & Modal Pipeline...");
+            vapi.start(assistant); 
+            triggerModal(1);
+        }
 
         function triggerModal(step) {
             const m = document.getElementById('setupModal');
@@ -226,15 +215,32 @@
 
         function runTest() {
             document.getElementById('v6').innerText = "SYNCING...";
-            setTimeout(() => { document.getElementById('v6').innerText = "STABLE"; document.getElementById('s6').classList.add('active'); }, 1000);
+            vapi.start(assistant); // Re-run test if they click step 6
+            setTimeout(() => { 
+                document.getElementById('v6').innerText = "STABLE"; 
+                document.getElementById('s6').classList.add('active'); 
+            }, 1000);
         }
+
+        // Handle Vapi Status Changes
+        vapi.on('call-start', () => {
+            const log = document.createElement('div');
+            log.innerHTML = `<span class="text-blue-500">></span> VOICE SESSION ESTABLISHED`;
+            document.getElementById('logs').prepend(log);
+            document.getElementById('v6').innerText = "STABLE";
+            document.getElementById('s6').classList.add('active');
+        });
+
+        vapi.on('call-end', () => {
+            document.getElementById('s6').classList.remove('active');
+            document.getElementById('v6').innerText = "READY";
+        });
 
         function activateSystem() {
             const btn = document.getElementById('finalBtn');
             btn.innerText = "UPLOADING...";
             btn.disabled = true;
 
-            // Update hidden form
             document.getElementById('f_region').value = selections.region;
             document.getElementById('f_industry').value = selections.industry;
             document.getElementById('f_role').value = selections.role;

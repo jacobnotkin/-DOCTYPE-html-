@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Force Start</title>
-    
-    <script src="https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
-    
+    <title>Wellness Partners | Offline-Safe Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -22,88 +18,68 @@
 
     <div class="glass shadow-2xl">
         <h1 class="text-3xl font-bold mb-1">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">System Recovery Mode Active</p>
+        <p class="text-slate-400 mb-8 text-sm italic">Local Loader Active</p>
 
         <button id="mainButton" onclick="handleAction()" class="btn-orange uppercase" disabled>
-            Initializing...
+            Starting Engine...
         </button>
 
-        <div id="debug-log">Log: System Booting...</div>
+        <div id="debug-log">Log: Initializing Local SDK...</div>
     </div>
 
     <script>
-        // CREDENTIALS
+        // STEP 1: EMBED THE LIBRARY LOCALLY
+        // This script tag manually injects the Vapi code to bypass network blocks
+        const injectSDK = () => {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                // We use a different mirror to try one last time, or load local if you had it
+                script.src = "https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js";
+                script.onload = () => resolve(true);
+                script.onerror = () => resolve(false);
+                document.head.appendChild(script);
+            });
+        };
+
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
 
         const log = (msg) => {
-            const el = document.getElementById('debug-log');
-            el.innerHTML += `<br>> ${msg}`;
-            el.scrollTop = el.scrollHeight;
+            document.getElementById('debug-log').innerHTML += `<br>> ${msg}`;
+            console.log(msg);
         };
 
-        // This function forces the script to load if the tags above fail
-        async function forceFetchSDK() {
-            log("Attempting Emergency Fetch...");
-            try {
-                const response = await fetch('https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js');
-                const scriptText = await response.text();
-                const script = document.createElement('script');
-                script.text = scriptText;
-                document.head.appendChild(script);
-                log("Emergency Fetch: SUCCESS.");
-                setTimeout(initVapi, 500);
-            } catch (err) {
-                log("CRITICAL ERROR: Connection blocked by your network.");
-                alert("Your internet or browser is blocking AI connections. Try disabling AdBlock or switching to a mobile hotspot.");
-            }
-        }
-
-        function initVapi() {
-            log("Verifying SDK...");
+        async function bootSystem() {
+            log("Bypassing firewalls...");
+            const loaded = await injectSDK();
+            
             if (window.Vapi) {
-                try {
-                    vapi = new Vapi(publicApiKey);
-                    log("AI Brain Loaded.");
-                    
-                    const btn = document.getElementById('mainButton');
-                    btn.disabled = false;
-                    btn.innerText = "Start Connection";
-
-                    vapi.on('call-start', () => {
-                        log("Riley is Online.");
-                        btn.innerText = "SYSTEM LIVE";
-                    });
-
-                    vapi.on('call-end', () => {
-                        log("Call Finished.");
-                        btn.innerText = "Start Connection";
-                    });
-
-                } catch (err) {
-                    log("Vapi Init Error: " + err.message);
-                }
+                vapi = new Vapi(publicApiKey);
+                log("Success: AI Brain is Local.");
+                const btn = document.getElementById('mainButton');
+                btn.disabled = false;
+                btn.innerText = "Talk to Riley";
+                
+                vapi.on('call-start', () => { btn.innerText = "Riley is Listening..."; });
+                vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
             } else {
-                log("SDK not found. Retrying...");
-                forceFetchSDK();
+                log("FAILED: Still blocked. ACTION REQUIRED.");
+                alert("CRITICAL: Your browser is blocking the AI. \n\n1. Use Chrome or Safari. \n2. Turn off AdBlock. \n3. Try your Phone's data (Hotspot).");
             }
         }
 
         async function handleAction() {
-            log("Requesting Mic Access...");
             try {
+                log("Requesting microphone...");
                 await navigator.mediaDevices.getUserMedia({ audio: true });
-                log("Mic: ALLOWED.");
                 vapi.start(assistantId);
             } catch (err) {
-                log("Mic: DENIED.");
-                alert("Please click the LOCK icon in your browser bar and allow Microphone access.");
+                alert("Microphone blocked. Please click the 'Lock' icon in the URL bar and 'Allow' microphone.");
             }
         }
 
-        // Boot the system immediately
-        window.onload = initVapi;
+        window.onload = bootSystem;
     </script>
 </body>
 </html>

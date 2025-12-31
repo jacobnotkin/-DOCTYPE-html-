@@ -3,70 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Connection Fix</title>
+    <title>Wellness Partners | System Active</title>
     
-    <script src="https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
-        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #log-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; max-height: 100px; overflow-y: auto; border: 1px solid #1e293b; }
+        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
+        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+        #status-log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
     <div class="glass shadow-2xl">
         <h1 class="text-3xl font-bold mb-1 tracking-tight">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">AI Assistant: Riley</p>
+        <p class="text-slate-400 mb-8 text-sm italic">AI Assistant Riley</p>
 
-        <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase" disabled>
+        <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="log-box">Status: Connecting to network...</div>
+        <div id="status-log">System: Connecting...</div>
     </div>
 
     <script>
+        // YOUR VERIFIED CREDENTIALS
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
 
-        function log(msg) {
-            document.getElementById('log-box').innerText = "Log: " + msg;
+        function updateStatus(msg) {
+            document.getElementById('status-log').innerText = "Status: " + msg;
         }
 
-        function checkLibrary() {
-            log("Searching for AI Brain...");
+        // This function ensures the AI library is ready before unlocking
+        function bootAI() {
             if (window.Vapi) {
                 vapi = new Vapi(publicApiKey);
-                log("SUCCESS: Riley is Online.");
+                updateStatus("RILEY ONLINE.");
                 
                 const btn = document.getElementById('mainBtn');
                 btn.disabled = false;
                 btn.innerText = "Talk to Riley";
                 
-                vapi.on('call-start', () => { btn.innerText = "Riley is Live"; });
+                vapi.on('call-start', () => { btn.innerText = "RILEY LISTENING..."; });
                 vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
             } else {
-                log("Network blocked. Switch to Mobile Hotspot.");
-                setTimeout(checkLibrary, 2000); // Check again every 2 seconds
+                updateStatus("STILL BLOCKED. REFRESHING...");
+                setTimeout(bootAI, 2000); // Retries every 2 seconds
             }
         }
 
         async function startRiley() {
             try {
-                log("Opening microphone...");
+                // Check microphone permission
                 await navigator.mediaDevices.getUserMedia({ audio: true });
                 vapi.start(assistantId);
             } catch (e) {
-                alert("Microphone Blocked! Click the LOCK icon in your browser address bar and choose 'Allow'.");
+                alert("Microphone Blocked! Click the LOCK icon in your browser bar and choose 'Allow'.");
             }
         }
 
-        window.onload = checkLibrary;
+        window.onload = bootAI;
     </script>
 </body>
 </html>

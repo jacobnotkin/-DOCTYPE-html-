@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | System Restore</title>
+    <title>Wellness Partners | Force Start</title>
     
-    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    <script src="https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: #06080f; color: white; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; }
+        body { background: #06080f; color: white; font-family: sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
         .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; transition: 0.3s; cursor: pointer; border: none; }
         .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #debug-log { margin-top: 20px; font-size: 10px; color: #64748b; font-family: monospace; text-align: left; background: black; padding: 10px; border-radius: 8px; width: 100%; max-height: 100px; overflow-y: auto; }
+        #debug-log { margin-top: 20px; font-size: 10px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; width: 100%; max-height: 120px; overflow-y: auto; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
     <div class="glass shadow-2xl">
         <h1 class="text-3xl font-bold mb-1">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm">AI Scheduling Assistant</p>
+        <p class="text-slate-400 mb-8 text-sm italic">System Recovery Mode Active</p>
 
         <button id="mainButton" onclick="handleAction()" class="btn-orange uppercase" disabled>
-            Loading Engine...
+            Initializing...
         </button>
 
-        <p id="statusText" class="mt-4 text-[10px] font-bold text-slate-500 uppercase">System: Offline</p>
-        
-        <div id="debug-log">Log: Initializing...</div>
+        <div id="debug-log">Log: System Booting...</div>
     </div>
 
     <script>
+        // CREDENTIALS
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
@@ -40,58 +41,68 @@
             const el = document.getElementById('debug-log');
             el.innerHTML += `<br>> ${msg}`;
             el.scrollTop = el.scrollHeight;
-            console.log(msg);
         };
 
+        // This function forces the script to load if the tags above fail
+        async function forceFetchSDK() {
+            log("Attempting Emergency Fetch...");
+            try {
+                const response = await fetch('https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js');
+                const scriptText = await response.text();
+                const script = document.createElement('script');
+                script.text = scriptText;
+                document.head.appendChild(script);
+                log("Emergency Fetch: SUCCESS.");
+                setTimeout(initVapi, 500);
+            } catch (err) {
+                log("CRITICAL ERROR: Connection blocked by your network.");
+                alert("Your internet or browser is blocking AI connections. Try disabling AdBlock or switching to a mobile hotspot.");
+            }
+        }
+
         function initVapi() {
-            log("Checking for Vapi library...");
+            log("Verifying SDK...");
             if (window.Vapi) {
                 try {
                     vapi = new Vapi(publicApiKey);
-                    log("Vapi Instance Created.");
+                    log("AI Brain Loaded.");
                     
-                    document.getElementById('mainButton').disabled = false;
-                    document.getElementById('mainButton').innerText = "Start Riley";
-                    document.getElementById('statusText').innerText = "System: Ready";
+                    const btn = document.getElementById('mainButton');
+                    btn.disabled = false;
+                    btn.innerText = "Start Connection";
 
                     vapi.on('call-start', () => {
-                        log("Call Started Successfully.");
-                        document.getElementById('mainButton').innerText = "Riley is Live";
+                        log("Riley is Online.");
+                        btn.innerText = "SYSTEM LIVE";
                     });
 
                     vapi.on('call-end', () => {
-                        log("Call Ended.");
-                        document.getElementById('mainButton').innerText = "Restart Riley";
-                    });
-
-                    vapi.on('error', (e) => {
-                        log("VAPI ERROR: " + JSON.stringify(e));
+                        log("Call Finished.");
+                        btn.innerText = "Start Connection";
                     });
 
                 } catch (err) {
-                    log("Initialization Failed: " + err.message);
+                    log("Vapi Init Error: " + err.message);
                 }
             } else {
-                log("Library not found yet. Retrying...");
-                setTimeout(initVapi, 1000);
+                log("SDK not found. Retrying...");
+                forceFetchSDK();
             }
         }
 
         async function handleAction() {
-            log("Attempting to connect...");
+            log("Requesting Mic Access...");
             try {
-                // Check for microphone support
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                log("Microphone Access Granted.");
-                stream.getTracks().forEach(track => track.stop()); // Close test stream
-                
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                log("Mic: ALLOWED.");
                 vapi.start(assistantId);
             } catch (err) {
-                log("Mic Error: " + err.message);
-                alert("Please enable your microphone in the browser settings.");
+                log("Mic: DENIED.");
+                alert("Please click the LOCK icon in your browser bar and allow Microphone access.");
             }
         }
 
+        // Boot the system immediately
         window.onload = initVapi;
     </script>
 </body>

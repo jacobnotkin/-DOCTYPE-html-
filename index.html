@@ -3,77 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | AI System</title>
+    <title>Wellness Partners | System Restore</title>
     
-    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px); padding: 48px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; }
-        .btn { background: #f97316; width: 100%; padding: 20px; border-radius: 16px; font-weight: 900; font-size: 1.2rem; transition: 0.3s; cursor: pointer; border: none; color: white; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
-        .btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
-        .btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); }
+        body { background: #06080f; color: white; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
+        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; transition: 0.3s; cursor: pointer; border: none; }
+        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+        #debug-log { margin-top: 20px; font-size: 10px; color: #64748b; font-family: monospace; text-align: left; background: black; padding: 10px; border-radius: 8px; width: 100%; max-height: 100px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <div class="card shadow-2xl">
-        <h1 class="text-4xl font-black mb-1 uppercase tracking-tighter">Wellness Partners</h1>
-        <p class="text-slate-400 mb-10 font-medium italic">Riley is your AI scheduling assistant.</p>
+    <div class="glass shadow-2xl">
+        <h1 class="text-3xl font-bold mb-1">Wellness Partners</h1>
+        <p class="text-slate-400 mb-8 text-sm">AI Scheduling Assistant</p>
 
-        <button id="s6" onclick="runTest()" class="btn uppercase tracking-tight" disabled>
-            Initializing...
+        <button id="mainButton" onclick="handleAction()" class="btn-orange uppercase" disabled>
+            Loading Engine...
         </button>
 
-        <p id="status" class="mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">System: Checking Connection</p>
+        <p id="statusText" class="mt-4 text-[10px] font-bold text-slate-500 uppercase">System: Offline</p>
+        
+        <div id="debug-log">Log: Initializing...</div>
     </div>
 
     <script>
-        // Verified Credentials
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
-
         let vapi = null;
 
-        // This function ensures Vapi exists before doing anything
-        function startEngine() {
+        const log = (msg) => {
+            const el = document.getElementById('debug-log');
+            el.innerHTML += `<br>> ${msg}`;
+            el.scrollTop = el.scrollHeight;
+            console.log(msg);
+        };
+
+        function initVapi() {
+            log("Checking for Vapi library...");
             if (window.Vapi) {
-                console.log("Vapi SDK Found. Initializing...");
-                vapi = new Vapi(publicApiKey);
+                try {
+                    vapi = new Vapi(publicApiKey);
+                    log("Vapi Instance Created.");
+                    
+                    document.getElementById('mainButton').disabled = false;
+                    document.getElementById('mainButton').innerText = "Start Riley";
+                    document.getElementById('statusText').innerText = "System: Ready";
+
+                    vapi.on('call-start', () => {
+                        log("Call Started Successfully.");
+                        document.getElementById('mainButton').innerText = "Riley is Live";
+                    });
+
+                    vapi.on('call-end', () => {
+                        log("Call Ended.");
+                        document.getElementById('mainButton').innerText = "Restart Riley";
+                    });
+
+                    vapi.on('error', (e) => {
+                        log("VAPI ERROR: " + JSON.stringify(e));
+                    });
+
+                } catch (err) {
+                    log("Initialization Failed: " + err.message);
+                }
+            } else {
+                log("Library not found yet. Retrying...");
+                setTimeout(initVapi, 1000);
+            }
+        }
+
+        async function handleAction() {
+            log("Attempting to connect...");
+            try {
+                // Check for microphone support
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                log("Microphone Access Granted.");
+                stream.getTracks().forEach(track => track.stop()); // Close test stream
                 
-                const btn = document.getElementById('s6');
-                btn.disabled = false;
-                btn.innerText = "Start Connection";
-                document.getElementById('status').innerText = "System: Online & Ready";
-
-                // Visual feedback for the call
-                vapi.on('call-start', () => {
-                    btn.innerText = "Riley is Speaking...";
-                    document.getElementById('status').innerText = "System: Live";
-                });
-
-                vapi.on('call-end', () => {
-                    btn.innerText = "Start Connection";
-                    document.getElementById('status').innerText = "System: Ready";
-                });
-            } else {
-                // If the library is still loading, wait 300ms and check again
-                setTimeout(startEngine, 300);
-            }
-        }
-
-        function runTest() {
-            if (vapi) {
-                console.log("Calling Riley...");
                 vapi.start(assistantId);
-            } else {
-                alert("The AI engine is still warming up. Please refresh and wait 3 seconds.");
+            } catch (err) {
+                log("Mic Error: " + err.message);
+                alert("Please enable your microphone in the browser settings.");
             }
         }
 
-        // Start the check loop immediately
-        startEngine();
+        window.onload = initVapi;
     </script>
 </body>
 </html>

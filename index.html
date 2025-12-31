@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | System Active</title>
+    <title>Wellness Partners | System Override</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
         .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
         .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
-        #status-log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
+        #status-log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div class="glass shadow-2xl">
-        <h1 class="text-3xl font-bold mb-1 tracking-tight">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">AI Assistant Riley</p>
+        <h1 class="text-3xl font-bold mb-1 tracking-tight uppercase">Wellness Partners</h1>
+        <p class="text-slate-400 mb-8 text-sm italic">Emergency Connection Mode</p>
 
         <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="status-log">System: Connecting...</div>
+        <div id="status-log">System: Booting...</div>
     </div>
 
     <script>
@@ -35,39 +34,65 @@
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
 
-        function updateStatus(msg) {
-            document.getElementById('status-log').innerText = "Status: " + msg;
+        function updateLog(msg) {
+            const logBox = document.getElementById('status-log');
+            logBox.innerHTML += "<br>> " + msg;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // This function ensures the AI library is ready before unlocking
-        function bootAI() {
+        // Function to manually inject scripts and check for blocks
+        function loadLibrary(url) {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = () => resolve(true);
+                script.onerror = () => resolve(false);
+                document.head.appendChild(script);
+            });
+        }
+
+        async function initSystem() {
+            updateLog("Checking Mirror 1 (JSDelivr)...");
+            let success = await loadLibrary('https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js');
+            
+            if (!success) {
+                updateLog("Mirror 1 Blocked. Trying Mirror 2 (UNPKG)...");
+                success = await loadLibrary('https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js');
+            }
+
             if (window.Vapi) {
-                vapi = new Vapi(publicApiKey);
-                updateStatus("RILEY ONLINE.");
-                
-                const btn = document.getElementById('mainBtn');
-                btn.disabled = false;
-                btn.innerText = "Talk to Riley";
-                
-                vapi.on('call-start', () => { btn.innerText = "RILEY LISTENING..."; });
-                vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
+                try {
+                    vapi = new Vapi(publicApiKey);
+                    updateLog("SUCCESS: AI BRAIN LOADED.");
+                    
+                    const btn = document.getElementById('mainBtn');
+                    btn.disabled = false;
+                    btn.innerText = "Talk to Riley";
+                    
+                    vapi.on('call-start', () => { btn.innerText = "RILEY LISTENING..."; });
+                    vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
+                } catch (e) {
+                    updateLog("Initialization Error: " + e.message);
+                }
             } else {
-                updateStatus("STILL BLOCKED. REFRESHING...");
-                setTimeout(bootAI, 2000); // Retries every 2 seconds
+                updateLog("CRITICAL: All mirrors blocked.");
+                updateLog("ACTION: Open in INCOGNITO window.");
             }
         }
 
         async function startRiley() {
             try {
-                // Check microphone permission
+                updateLog("Requesting Mic Access...");
                 await navigator.mediaDevices.getUserMedia({ audio: true });
                 vapi.start(assistantId);
             } catch (e) {
-                alert("Microphone Blocked! Click the LOCK icon in your browser bar and choose 'Allow'.");
+                updateLog("Mic Denied.");
+                alert("Microphone Blocked! Click the LOCK icon in your browser address bar and choose 'Allow'.");
             }
         }
 
-        window.onload = bootAI;
+        // Start the engine
+        window.onload = initSystem;
     </script>
 </body>
 </html>

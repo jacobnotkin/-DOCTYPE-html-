@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Force Active</title>
+    <title>Wellness Partners | Permanent Fix</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
+    <script src="https://unpkg.com/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
-        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #log-status { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
+        .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); }
+        .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+        #status-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
     <div class="glass shadow-2xl">
         <h1 class="text-3xl font-bold mb-1 tracking-tight">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">System Recovery Mode</p>
+        <p class="text-slate-400 mb-8 text-sm italic">System Lockdown Resolved</p>
 
         <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="log-status">System: Syncing...</div>
+        <div id="status-box">Status: Bypassing Safari Filters...</div>
     </div>
 
     <script>
@@ -34,46 +34,43 @@
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
 
-        function updateLog(msg) {
-            document.getElementById('log-status').innerText = "Status: " + msg;
+        function log(msg) {
+            document.getElementById('status-box').innerText = "Status: " + msg;
         }
 
-        // Forced Boot Sequence
-        async function bootSequence() {
-            updateLog("Waiting for network clearance...");
-            
-            // Wait 4 seconds to bypass initial firewall checks
-            setTimeout(() => {
-                if (window.Vapi) {
-                    try {
-                        vapi = new Vapi(publicApiKey);
-                        updateLog("RILEY ONLINE.");
-                        const btn = document.getElementById('mainBtn');
-                        btn.disabled = false;
-                        btn.innerText = "Talk to Riley";
-
-                        vapi.on('call-start', () => { btn.innerText = "Riley is Listening..."; });
-                        vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
-                    } catch (e) {
-                        updateLog("Credential Error. Check API Key.");
-                    }
-                } else {
-                    updateLog("STILL BLOCKED. Use Incognito Window.");
+        // This function forces the browser to re-check for the library every second
+        function permanentBoot() {
+            if (window.Vapi) {
+                try {
+                    vapi = new Vapi(publicApiKey);
+                    log("SUCCESS: RILEY ONLINE.");
+                    const btn = document.getElementById('mainBtn');
+                    btn.disabled = false;
+                    btn.innerText = "Talk to Riley";
+                    
+                    vapi.on('call-start', () => { btn.innerText = "Riley is Listening..."; });
+                    vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
+                } catch (e) {
+                    log("Initialization Error.");
                 }
-            }, 4000);
+            } else {
+                log("Retrying Secure Connection...");
+                setTimeout(permanentBoot, 1000); 
+            }
         }
 
         async function startRiley() {
             try {
-                // Request mic permission
+                // Request microphone access
                 await navigator.mediaDevices.getUserMedia({ audio: true });
                 vapi.start(assistantId);
             } catch (e) {
-                alert("Microphone Blocked! Toggle the switch in Safari settings.");
+                alert("Please click the LOCK icon in your browser and ALLOW Microphone.");
             }
         }
 
-        window.onload = bootSequence;
+        // Start the loop immediately
+        permanentBoot();
     </script>
 </body>
 </html>

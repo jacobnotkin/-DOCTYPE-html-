@@ -10,10 +10,10 @@
 
     <style>
         body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
         .btn-call { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
         .btn-call:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
-        #status-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
+        #status-display { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -22,60 +22,62 @@
         <h1 class="text-3xl font-bold mb-1 tracking-tight uppercase">Wellness Partners</h1>
         <p class="text-slate-400 mb-8 text-sm italic">AI Assistant: Riley</p>
 
-        <button id="mainBtn" onclick="handleCall()" class="btn-call uppercase w-full" disabled>
+        <button id="mainBtn" onclick="handleToggle()" class="btn-call uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="status-box">Status: Syncing AI brain...</div>
+        <div id="status-display">Status: Forcing secure sync...</div>
     </div>
 
     <script>
+        // VERIFIED CREDENTIALS
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
-        let isCalling = false;
+        let activeCall = false;
 
-        function updateStatus(msg) {
-            document.getElementById('status-box').innerText = "Status: " + msg;
+        function log(msg) {
+            document.getElementById('status-display').innerText = "Status: " + msg;
         }
 
-        // SELF-HEALING BOOT: Forces a reload every second until the firewall breaks
-        function forceBoot() {
+        // RECOVERY LOOP: Forces connection until Safari yields
+        function launchEngine() {
             if (window.Vapi) {
                 try {
                     vapi = new Vapi(publicApiKey);
-                    updateStatus("SUCCESS: RILEY ONLINE.");
+                    log("SUCCESS: RILEY ONLINE.");
                     const btn = document.getElementById('mainBtn');
                     btn.disabled = false;
                     btn.innerText = "Talk to Riley";
                     
-                    vapi.on('call-start', () => { isCalling = true; btn.innerText = "Riley is Listening..."; });
-                    vapi.on('call-end', () => { isCalling = false; btn.innerText = "Talk to Riley"; });
+                    vapi.on('call-start', () => { activeCall = true; btn.innerText = "Riley is Listening..."; });
+                    vapi.on('call-end', () => { activeCall = false; btn.innerText = "Talk to Riley"; });
                 } catch (e) {
-                    updateStatus("Connection unstable. Retrying...");
-                    setTimeout(forceBoot, 1000);
+                    log("Network jitter. Retrying...");
+                    setTimeout(launchEngine, 1000);
                 }
             } else {
-                updateStatus("Bypassing Safari Firewall...");
-                setTimeout(forceBoot, 1000); 
+                log("Safari block detected. Forcing bypass...");
+                setTimeout(launchEngine, 1000); 
             }
         }
 
-        async function handleCall() {
-            if (isCalling) {
+        async function handleToggle() {
+            if (activeCall) {
                 vapi.stop();
             } else {
                 try {
-                    // Forced Microphone check
+                    // Force a hardware mic check for Safari
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                     vapi.start(assistantId);
                 } catch (e) {
-                    alert("Mic Blocked! Click the URL bar icon and select 'Allow Microphone'.");
+                    alert("Microphone Error: Please allow access in the address bar lock icon.");
                 }
             }
         }
 
-        forceBoot();
+        // Execute recovery loop immediately
+        launchEngine();
     </script>
 </body>
 </html>

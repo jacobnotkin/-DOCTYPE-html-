@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | System Active</title>
+    <title>Wellness Partners | Active</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,7 +26,7 @@
             Initializing...
         </button>
 
-        <div id="status-box">Status: Bypassing Safari Privacy...</div>
+        <div id="status-box">Status: Connecting to Riley...</div>
     </div>
 
     <script>
@@ -35,16 +35,16 @@
         let vapi = null;
         let isCalling = false;
 
-        function updateLog(msg) {
+        function updateStatus(msg) {
             document.getElementById('status-box').innerText = "Status: " + msg;
         }
 
-        // PERMANENT RESOLUTION LOOP: Retries until Safari's ITP gives up
-        function startRepairLoop() {
+        // PERMANENT RESOLUTION LOOP: Retries until Safari's ITP yields
+        function launchEngine() {
             if (window.Vapi) {
                 try {
                     vapi = new Vapi(publicApiKey);
-                    updateLog("SUCCESS: RILEY ONLINE.");
+                    updateStatus("SUCCESS: RILEY ONLINE.");
                     const btn = document.getElementById('mainBtn');
                     btn.disabled = false;
                     btn.innerText = "Talk to Riley";
@@ -52,12 +52,12 @@
                     vapi.on('call-start', () => { isCalling = true; btn.innerText = "Riley is Listening..."; });
                     vapi.on('call-end', () => { isCalling = false; btn.innerText = "Talk to Riley"; });
                 } catch (e) {
-                    updateLog("Jitter detected. Retrying...");
-                    setTimeout(startRepairLoop, 1000);
+                    updateStatus("Unstable connection. Retrying...");
+                    setTimeout(launchEngine, 1000);
                 }
             } else {
-                updateLog("Bypassing Safari Privacy Protection...");
-                setTimeout(startRepairLoop, 1000); 
+                updateStatus("Bypassing Safari Privacy Filters...");
+                setTimeout(launchEngine, 1000); 
             }
         }
 
@@ -66,17 +66,17 @@
                 vapi.stop();
             } else {
                 try {
-                    // Force a hardware mic handshake
+                    // Forced hardware mic handshake
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                     vapi.start(assistantId);
                 } catch (e) {
-                    alert("Mic Blocked! Click the LOCK icon in your URL bar and select 'Allow'.");
+                    alert("Mic Blocked! Please allow microphone access in your browser settings.");
                 }
             }
         }
 
         // Start recovery loop immediately
-        startRepairLoop();
+        launchEngine();
     </script>
 </body>
 </html>

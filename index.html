@@ -6,57 +6,54 @@
     <title>Wellness Partners | AI Control Center</title>
     
     <script src="https://cdn.jsdelivr.net/gh/vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { background: radial-gradient(circle at 50% 50%, #111827 0%, #06080f 100%); min-height: 100vh; color: #e2e8f0; font-family: sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 40px; }
-        .orange-btn { background: #f97316; transition: all 0.3s ease; }
-        .orange-btn:hover:not(:disabled) { background: #ea580c; transform: scale(1.02); }
-        .orange-btn:disabled { background: #334155; cursor: not-allowed; opacity: 0.6; }
+        body { background: #0f172a; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 32px; width: 100%; max-width: 450px; padding: 40px; text-align: center; }
+        .orange-btn { background: #f97316; width: 100%; padding: 20px; border-radius: 16px; color: white; font-weight: 900; font-size: 1.25rem; transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
+        .orange-btn:disabled { background: #334155; opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        .orange-btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); }
     </style>
 </head>
-<body class="flex items-center justify-center p-6">
+<body>
 
-    <div class="glass-panel max-w-md w-full p-10 text-center shadow-2xl">
-        <div class="mb-8">
-            <span class="text-orange-500 font-bold tracking-widest text-xs uppercase">System v2.2</span>
-            <h1 class="text-4xl font-bold mt-2 text-white">Wellness Partners</h1>
-            <p class="text-slate-400 mt-4">Riley is your AI scheduling assistant.</p>
+    <div class="glass-panel shadow-2xl">
+        <div class="mb-6">
+            <h1 class="text-3xl font-black tracking-tight text-white uppercase">Wellness Partners</h1>
+            <p class="text-slate-400 mt-1 font-medium italic">Riley is your AI scheduling assistant.</p>
         </div>
 
-        <button id="s6" onclick="runTest()" disabled class="orange-btn w-full py-5 rounded-2xl text-white font-black text-xl shadow-lg shadow-orange-500/20 uppercase tracking-tighter">
+        <button id="s6" onclick="runTest()" class="orange-btn uppercase tracking-tighter" disabled>
             Initializing...
         </button>
 
-        <div id="status-label" class="mt-6 text-slate-500 text-sm font-mono uppercase tracking-widest">
-            System: Connecting...
+        <div id="status-label" class="mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+            System: Offline
         </div>
     </div>
 
     <script>
-        // YOUR UNIQUE VAPI CREDENTIALS
+        // Verified Credentials from your screenshots
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
 
         let vapiInstance = null;
 
-        // Function to initialize the connection once the SDK loads
-        function initVapi() {
+        // Safety function to wait for the library to load
+        function setupRiley() {
             if (window.Vapi) {
-                console.log("SDK Found. Readying Riley...");
                 vapiInstance = new Vapi(publicApiKey);
                 
                 const btn = document.getElementById('s6');
                 btn.disabled = false;
                 btn.innerText = "Start Connection";
                 document.getElementById('status-label').innerText = "System: Ready";
-                
-                // Visual feedback during the call
+
+                // Voice Event Listeners
                 vapiInstance.on('call-start', () => {
                     btn.innerText = "Riley is Speaking...";
-                    document.getElementById('status-label').innerText = "System: Live";
+                    document.getElementById('status-label').innerText = "System: Live Connection";
                 });
 
                 vapiInstance.on('call-end', () => {
@@ -66,23 +63,23 @@
 
                 vapiInstance.on('error', (e) => {
                     console.error('Vapi Error:', e);
-                    document.getElementById('status-label').innerText = "System: Error";
+                    document.getElementById('status-label').innerText = "System: Connection Error";
                 });
             } else {
-                // If the library is still loading, wait 500ms and try again
-                setTimeout(initVapi, 500);
+                // Keep checking if the typo fix is live
+                setTimeout(setupRiley, 500);
             }
         }
 
         function runTest() {
             if (vapiInstance) {
-                console.log("Starting voice call...");
+                console.log("Connecting to Riley...");
                 vapiInstance.start(assistantId);
             }
         }
 
-        // Run the check on page load
-        initVapi();
+        // Start checking for the brain immediately
+        setupRiley();
     </script>
 </body>
 </html>

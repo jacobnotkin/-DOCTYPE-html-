@@ -12,7 +12,7 @@
         body { background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .card { background: #1e293b; padding: 40px; border-radius: 24px; text-align: center; border: 1px solid #334155; max-width: 400px; width: 100%; }
         .btn { background: #f97316; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; transition: 0.2s; cursor: pointer; }
-        .btn:disabled { background: #334155; cursor: not-allowed; }
+        .btn:disabled { background: #334155; cursor: not-allowed; opacity: 0.5; }
         .btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); }
     </style>
 </head>
@@ -20,13 +20,13 @@
 
     <div class="card shadow-2xl">
         <h1 class="text-3xl font-bold mb-2 text-white">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8">AI Scheduling Assistant</p>
+        <p class="text-slate-400 mb-8 font-medium">AI Scheduling Assistant</p>
 
         <button id="s6" onclick="runTest()" class="btn uppercase tracking-tight" disabled>
             Initializing...
         </button>
 
-        <p id="status" class="mt-4 text-xs font-mono text-slate-500">System: Offline</p>
+        <p id="status" class="mt-4 text-xs font-mono text-slate-500 uppercase tracking-widest">System: Offline</p>
     </div>
 
     <script>
@@ -36,27 +36,36 @@
 
         let vapi = null;
 
-        // Function to set up Riley after the page loads
+        // Function to set up Riley after the page/library loads
         function setupRiley() {
             if (window.Vapi) {
+                console.log("Vapi SDK detected. Initializing...");
                 vapi = new Vapi(publicApiKey);
-                document.getElementById('s6').disabled = false;
-                document.getElementById('s6').innerText = "Start Connection";
+                
+                const btn = document.getElementById('s6');
+                btn.disabled = false;
+                btn.innerText = "Start Connection";
                 document.getElementById('status').innerText = "System: Ready";
 
-                // Visual updates when she speaks
+                // Visual updates during the call
                 vapi.on('call-start', () => {
-                    document.getElementById('s6').innerText = "Riley is Listening...";
-                    document.getElementById('status').innerText = "System: Live";
+                    btn.innerText = "Riley is Listening...";
+                    document.getElementById('status').innerText = "System: Live Connection";
                 });
 
                 vapi.on('call-end', () => {
-                    document.getElementById('s6').innerText = "Start Connection";
+                    btn.innerText = "Start Connection";
                     document.getElementById('status').innerText = "System: Ready";
                 });
+
+                vapi.on('error', (e) => {
+                    console.error('Vapi Error:', e);
+                    document.getElementById('status').innerText = "System: Connection Error";
+                });
             } else {
-                // Retry in 1 second if the library isn't loaded yet
-                setTimeout(setupRiley, 1000);
+                // If library isn't there, check again in 500ms
+                console.log("Waiting for Vapi library...");
+                setTimeout(setupRiley, 500);
             }
         }
 
@@ -67,7 +76,7 @@
             }
         }
 
-        // Run the setup when page opens
+        // Start the check as soon as possible
         setupRiley();
     </script>
 </body>

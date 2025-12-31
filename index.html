@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Override</title>
+    <title>Wellness Partners | Force Active</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,63 +13,67 @@
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
         .btn-orange { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
         .btn-orange:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #status-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
+        #log-status { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
     <div class="glass shadow-2xl">
         <h1 class="text-3xl font-bold mb-1 tracking-tight">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">Direct Connection Mode</p>
+        <p class="text-slate-400 mb-8 text-sm italic">System Recovery Mode</p>
 
         <button id="mainBtn" onclick="startRiley()" class="btn-orange uppercase w-full" disabled>
             Initializing...
         </button>
 
-        <div id="status-box">System: Booting...</div>
+        <div id="log-status">System: Syncing...</div>
     </div>
 
     <script>
-        // YOUR VERIFIED CREDENTIALS
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
         let vapi = null;
 
-        function log(msg) {
-            document.getElementById('status-box').innerText = "Status: " + msg;
+        function updateLog(msg) {
+            document.getElementById('log-status').innerText = "Status: " + msg;
         }
 
-        // 3-second delayed boot to bypass network lag
-        async function init() {
-            log("Syncing with AI nodes...");
+        // Forced Boot Sequence
+        async function bootSequence() {
+            updateLog("Waiting for network clearance...");
             
+            // Wait 4 seconds to bypass initial firewall checks
             setTimeout(() => {
                 if (window.Vapi) {
-                    vapi = new Vapi(publicApiKey);
-                    log("SUCCESS: RILEY ONLINE.");
-                    const btn = document.getElementById('mainBtn');
-                    btn.disabled = false;
-                    btn.innerText = "Talk to Riley";
-                    
-                    vapi.on('call-start', () => { btn.innerText = "Riley is Listening..."; });
-                    vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
+                    try {
+                        vapi = new Vapi(publicApiKey);
+                        updateLog("RILEY ONLINE.");
+                        const btn = document.getElementById('mainBtn');
+                        btn.disabled = false;
+                        btn.innerText = "Talk to Riley";
+
+                        vapi.on('call-start', () => { btn.innerText = "Riley is Listening..."; });
+                        vapi.on('call-end', () => { btn.innerText = "Talk to Riley"; });
+                    } catch (e) {
+                        updateLog("Credential Error. Check API Key.");
+                    }
                 } else {
-                    log("BLOCKED. Check 'Content Blockers' in Safari settings.");
+                    updateLog("STILL BLOCKED. Use Incognito Window.");
                 }
-            }, 3000);
+            }, 4000);
         }
 
         async function startRiley() {
             try {
-                // Request microphone access
+                // Request mic permission
                 await navigator.mediaDevices.getUserMedia({ audio: true });
                 vapi.start(assistantId);
             } catch (e) {
-                alert("Please enable Microphone in browser settings.");
+                alert("Microphone Blocked! Toggle the switch in Safari settings.");
             }
         }
 
-        window.onload = init;
+        window.onload = bootSequence;
     </script>
 </body>
 </html>

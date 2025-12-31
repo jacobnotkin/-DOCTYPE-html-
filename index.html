@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Chrome Verified</title>
+    <title>Wellness Partners | Verified</title>
     <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -11,15 +11,15 @@
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
         .btn-call { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
         .btn-call:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #status-box { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
+        #log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
     <div class="glass">
         <h1 class="text-3xl font-bold mb-1 uppercase">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">AI Assistant: Riley</p>
-        <button id="mainBtn" onclick="handleCall()" class="btn-call uppercase w-full" disabled>Initializing...</button>
-        <div id="status-box">Status: Syncing with AI...</div>
+        <p class="text-slate-400 mb-8 text-sm italic">Riley AI</p>
+        <button id="mainBtn" onclick="handleCall()" class="btn-call uppercase w-full" disabled>Loading...</button>
+        <div id="log">Status: Initializing...</div>
     </div>
 
     <script>
@@ -28,31 +28,32 @@
         let vapi = null;
         let isCalling = false;
 
-        function updateLog(msg) { document.getElementById('status-box').innerText = "Status: " + msg; }
-
-        function init() {
+        // FORCE INITIALIZATION
+        async function startEngine() {
             if (window.Vapi) {
                 vapi = new Vapi(publicApiKey);
-                updateLog("RILEY ONLINE");
+                document.getElementById('log').innerText = "Status: RILEY CONNECTED";
                 const btn = document.getElementById('mainBtn');
                 btn.disabled = false;
                 btn.innerText = "Talk to Riley";
-                vapi.on('call-start', () => { isCalling = true; btn.innerText = "Listening..."; });
+                
+                vapi.on('call-start', () => { isCalling = true; btn.innerText = "Riley Listening..."; });
                 vapi.on('call-end', () => { isCalling = false; btn.innerText = "Talk to Riley"; });
             } else {
-                setTimeout(init, 500);
+                setTimeout(startEngine, 500);
             }
         }
 
         async function handleCall() {
             if (isCalling) { vapi.stop(); } else {
                 try {
+                    // This forces the browser to "Handshake" with Riley
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                     vapi.start(assistantId);
-                } catch (e) { alert("Enable Microphone in the URL bar."); }
+                } catch (e) { alert("Mic required!"); }
             }
         }
-        init();
+        startEngine();
     </script>
 </body>
 </html>

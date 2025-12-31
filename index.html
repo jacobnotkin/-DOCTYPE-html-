@@ -154,10 +154,29 @@
         <div class="gemini-sig">Designed By <span>Google Gemini</span></div>
     </div>
 <script>
-  const assistant = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; // e6dec738-840f-4932-85b4-421b2a7bdb0c
-  const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";       // d4fcbe60-643b-48c8-9d74-dfb8ff3236f3
+  <script>
+  // Your IDs are already correctly placed here
+  const assistant = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
+  const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
 
-  // ... the rest of your code ...
+  // Initialize Vapi
+  const vapi = new Vapi(apiKey);
+
+  // This connects your "START CONNECTION" button
+  function runTest() {
+    console.log("Starting AI Voice Assistant...");
+    vapi.start(assistant);
+  }
+
+  // Optional: Change button text when active
+  vapi.on('call-start', () => {
+    document.getElementById('s6').innerText = "SYSTEM ACTIVE";
+  });
+
+  vapi.on('call-end', () => {
+    document.getElementById('s6').innerText = "06 TEST READY";
+  });
+</script>
 </script>
     <script>
         const selections = { region: "", industry: "", role: "", brand: "", voice: "" };

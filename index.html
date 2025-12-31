@@ -11,7 +11,7 @@
     <style>
         body { background: #0f172a; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 32px; width: 100%; max-width: 450px; padding: 40px; text-align: center; }
-        .orange-btn { background: #f97316; width: 100%; padding: 20px; border-radius: 16px; color: white; font-weight: 900; font-size: 1.25rem; transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
+        .orange-btn { background: #f97316; width: 100%; padding: 20px; border-radius: 16px; color: white; font-weight: 900; font-size: 1.25rem; transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); border: none; cursor: pointer; }
         .orange-btn:disabled { background: #334155; opacity: 0.6; cursor: not-allowed; box-shadow: none; }
         .orange-btn:hover:not(:disabled) { background: #ea580c; transform: translateY(-2px); }
     </style>
@@ -34,15 +34,16 @@
     </div>
 
     <script>
-        // Verified Credentials from your screenshots
+        // Your Verified Credentials from Vapi Dashboard
         const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
         const publicApiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
 
         let vapiInstance = null;
 
-        // Safety function to wait for the library to load
+        // This function checks if the Vapi "brain" has finished downloading
         function setupRiley() {
             if (window.Vapi) {
+                console.log("Vapi SDK detected. Initializing...");
                 vapiInstance = new Vapi(publicApiKey);
                 
                 const btn = document.getElementById('s6');
@@ -50,7 +51,7 @@
                 btn.innerText = "Start Connection";
                 document.getElementById('status-label').innerText = "System: Ready";
 
-                // Voice Event Listeners
+                // Voice Event Listeners for visual feedback
                 vapiInstance.on('call-start', () => {
                     btn.innerText = "Riley is Speaking...";
                     document.getElementById('status-label').innerText = "System: Live Connection";
@@ -60,17 +61,13 @@
                     btn.innerText = "Start Connection";
                     document.getElementById('status-label').innerText = "System: Ready";
                 });
-
-                vapiInstance.on('error', (e) => {
-                    console.error('Vapi Error:', e);
-                    document.getElementById('status-label').innerText = "System: Connection Error";
-                });
             } else {
-                // Keep checking if the typo fix is live
+                // Keep checking every half-second until the typo is fixed and it loads
                 setTimeout(setupRiley, 500);
             }
         }
 
+        // Triggered by the orange button
         function runTest() {
             if (vapiInstance) {
                 console.log("Connecting to Riley...");
@@ -78,7 +75,7 @@
             }
         }
 
-        // Start checking for the brain immediately
+        // Start the initialization check immediately
         setupRiley();
     </script>
 </body>

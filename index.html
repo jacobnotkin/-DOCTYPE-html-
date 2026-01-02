@@ -4,87 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI VoiceInfra | Command Center v2.2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0e14;
-            --card-dark: #161b22;
-            --accent-orange: #ff6b00;
-            --accent-green: #5dfe7b;
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --accent: #ff6b00; /* Infrastructure Orange */
+            --text-main: #ffffff;
+            --text-dim: #8b949e;
+            --border: #30363d;
+            --green: #5dfe7b;
         }
+
         body {
-            background-color: var(--bg-dark);
-            color: white;
+            background-color: var(--bg);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
-        .command-center {
-            background: var(--card-dark);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid #30363d;
+
+        .container {
             width: 90%;
-            max-width: 800px;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 50px;
+            border: 1px solid var(--border);
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Top Header Area */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: 1px; }
+        .brand span { color: var(--accent); }
+        .status-badge { border: 1px solid var(--border); padding: 5px 15px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); }
+
+        /* Main Offer Section */
+        h1 { font-size: 3.5rem; margin: 0; font-weight: 900; line-height: 1; }
+        .highlight { color: var(--accent); }
+        .sub-text { color: var(--text-dim); margin: 20px 0 40px 0; max-width: 500px; line-height: 1.6; }
+
+        /* Pricing Card */
+        .pricing-card {
+            position: absolute;
+            right: 50px;
+            top: 140px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--accent);
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { color: var(--accent-orange); font-weight: bold; font-size: 1.2rem; }
-        .status { color: var(--accent-green); font-size: 0.8rem; }
-        h1 { font-size: 2.5rem; margin: 10px 0; }
-        .pipeline {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 30px;
-        }
-        .node-btn {
-            background: #21262d;
-            border: 1px solid #30363d;
-            color: #8b949e;
-            padding: 15px;
-            border-radius: 12px;
+        .price { font-size: 2.5rem; font-weight: 900; }
+        .price span { font-size: 1rem; color: var(--text-dim); }
+        .activate-btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            width: 100%;
         }
-        .node-btn:hover { border-color: var(--accent-orange); color: white; }
-        .node-btn.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
+
+        /* Pipeline Navigation */
+        .pipeline-title { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .pipeline { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .step {
+            background: #21262d;
+            border: 1px solid var(--border);
+            padding: 15px 5px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .step:hover { border-color: var(--accent); }
+        .step.active { border-color: var(--accent); background: rgba(255, 107, 0, 0.1); }
+        .step-num { display: block; font-size: 9px; color: var(--accent); font-weight: bold; }
+        .step-name { display: block; font-size: 11px; font-weight: bold; margin-top: 5px; }
+
+        .terminal {
+            background: black;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .footer-credit { margin-top: 30px; text-align: center; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="command-center">
+    <div class="container">
         <div class="header">
-            <div class="logo">AI VOICEINFRA</div>
-            <div class="status">● SYSTEM ACTIVE</div>
+            <div class="brand"><span>AI</span> VOICEINFRA</div>
+            <div class="status-badge">
+                <div class="status-dot"></div> ACTIVE
+            </div>
         </div>
-        <h1>Connect Your Brand</h1>
-        <p>Select an industry node to activate your autonomous voice agent.</p>
 
-        <div class="pipeline">
-            <button class="node-btn" onclick="selectAgent('wellness', this)">WELLNESS</button>
-            <button class="node-btn" onclick="selectAgent('auto', this)">AUTOMOTIVE</button>
-            <button class="node-btn" onclick="selectAgent('realestate', this)">REAL ESTATE</button>
-            <button class="node-btn" onclick="selectAgent('hospitality', this)">HOSPITALITY</button>
+        <h1>Connect Your Brand <br> <span class="highlight">In 60 Seconds.</span></h1>
+        <p class="sub-text">The autonomous infrastructure that bridges local businesses to sophisticated AI Voice Agents.</p>
+
+        <div class="pricing-card">
+            <div class="price">$199<span>/mo</span></div>
+            <div style="font-size: 10px; margin-bottom: 20px;">UNLIMITED CALLS INCLUDED</div>
+            <button class="activate-btn">ACTIVATE NODE</button>
         </div>
+
+        <div class="pipeline-title">Configuration Pipeline</div>
+        <div class="pipeline">
+            <div class="step"><span class="step-num">01 REGION</span><span class="step-name">SELECT</span></div>
+            <div class="step active" onclick="triggerRiley()"><span class="step-num">02 INDUSTRY</span><span class="step-name">WELLNESS</span></div>
+            <div class="step"><span class="step-num">03 ROLE</span><span class="step-name">SELECT</span></div>
+            <div class="step"><span class="step-num">04 IDENTITY</span><span class="step-name">SELECT</span></div>
+            <div class="step"><span class="step-num">05 VOICE</span><span class="step-name">SELECT</span></div>
+            <div class="step"><span class="step-num">06 TEST</span><span class="step-name">READY</span></div>
+            <div class="step"><span class="step-num">07 ACTIVATE</span><span class="step-name">LOCK</span></div>
+        </div>
+
+        <div class="terminal">> System operational. Bridging to local nodes...</div>
+        
+        <div class="footer-credit">Designed by Gemini</div>
     </div>
 
     <script>
-        var vapiInstance = null;
-
-        // 1. YOUR DATA FROM DASHBOARD
+        // Use the Public Key and Assistant ID that we verified
         const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3"; 
-        const assistantLibrary = {
-            wellness: "e95dca20-93f2-46f0-b014-3a885586fa65", // Riley
-            auto: "PASTE_NEW_ID_HERE",
-            realestate: "PASTE_NEW_ID_HERE",
-            hospitality: "PASTE_NEW_ID_HERE"
-        };
+        const wellnessId = "e95dca20-93f2-46f0-b014-3a885586fa65";
 
-        // 2. LOAD VAPI SDK
         (function (d, t) {
             var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
             g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
@@ -92,28 +153,23 @@
             s.parentNode.insertBefore(g, s);
 
             g.onload = function () {
-                console.log("Vapi SDK Loaded");
+                console.log("Infrastructure Loaded");
             };
         })(document, "script");
 
-        // 3. AGENT SELECTION LOGIC
-        function selectAgent(type, btn) {
-            // UI Feedback
-            document.querySelectorAll('.node-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Shutdown current session if active
-            if (window.vapiSDK && window.vapiSDK.terminate) {
-                window.vapiSDK.terminate();
-            }
-
-            // Launch the selected Agent
+        function triggerRiley() {
             window.vapiSDK.run({
                 apiKey: apiKey,
-                assistant: assistantLibrary[type],
+                assistant: wellnessId,
                 config: {
                     position: "bottom-right",
-                    idle: { title: "Talk to " + type, color: "rgb(93, 254, 202)" }
+                    idle: {
+                        color: "rgb(93, 254, 202)",
+                        type: "pill",
+                        title: "Talk to Riley",
+                        subtitle: "Wellness Assistant",
+                        icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone.svg",
+                    }
                 }
             });
         }

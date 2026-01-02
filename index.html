@@ -26,7 +26,6 @@
         .step-card.active { background: linear-gradient(135deg, #f97316, #ea580c); border-color: #ffedd5; }
         .orange-btn { background: linear-gradient(90deg, #f97316, #ea580c); color: white; font-weight: 800; transition: 0.3s; }
         
-        /* Fixed Single Line Tag */
         .operator-tag-row {
             background: rgba(249, 115, 22, 0.1); border-left: 3px solid #f97316;
             color: #f97316; padding: 10px 20px; font-size: 11px; font-weight: 800;
@@ -44,6 +43,14 @@
             animation: pulse-gold 3s infinite;
         }
         @keyframes pulse-gold { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.25); filter: brightness(1.4); } }
+        
+        /* Updated Beta Ribbon */
+        .beta-ribbon {
+            background: #f97316; color: white; font-weight: 900; font-size: 9px;
+            padding: 6px 40px; position: absolute; top: 20px; right: -35px;
+            transform: rotate(45deg); letter-spacing: 0.1em; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
     </style>
@@ -88,7 +95,7 @@
 
                 <div class="lg:col-span-2">
                     <div class="bg-black/40 border-2 border-orange-500/30 rounded-[40px] p-8 text-center relative overflow-hidden">
-                        <div class="absolute -right-10 top-6 rotate-45 bg-white text-orange-600 font-black text-[8px] px-12 py-1 shadow-lg tracking-tighter">LIMITED BETA OFFER</div>
+                        <div class="beta-ribbon">LIMITED BETA OFFER</div>
                         
                         <h3 class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] mb-2 italic">Infrastructure Tier</h3>
                         
@@ -134,7 +141,6 @@
     </div>
 
     <script>
-        // Priority Sorting: Active first
         const activeNodes = ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "UAE", "Singapore", "Japan"];
         const otherCountries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Belgium", "Brazil", "Bulgaria", "Chile", "China", "Colombia", "Denmark", "Egypt", "Finland", "Greece", "India", "Indonesia", "Ireland", "Israel", "Italy", "Mexico", "Netherlands", "New Zealand", "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Saudi Arabia", "South Africa", "South Korea", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "Vietnam"];
         const sortedCountries = [...activeNodes, ...otherCountries];

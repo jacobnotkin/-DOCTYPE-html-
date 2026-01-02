@@ -3,57 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners | Verified</title>
-    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web-sdk@latest/dist/vapi-sdk.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Wellness Partners - Talk to Riley</title>
     <style>
-        body { background: #06080f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; }
-        .btn-call { background: #f97316; color: white; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
-        .btn-call:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-        #log { margin-top: 20px; font-size: 11px; color: #10b981; font-family: monospace; text-align: left; background: black; padding: 12px; border-radius: 10px; border: 1px solid #1e293b; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2d3436; }
+        p { color: #636e72; margin-bottom: 30px; }
     </style>
 </head>
 <body>
-    <div class="glass">
-        <h1 class="text-3xl font-bold mb-1 uppercase">Wellness Partners</h1>
-        <p class="text-slate-400 mb-8 text-sm italic">Riley AI</p>
-        <button id="mainBtn" onclick="handleCall()" class="btn-call uppercase w-full" disabled>Loading...</button>
-        <div id="log">Status: Initializing...</div>
+
+    <div class="container">
+        <h1>Wellness Partners</h1>
+        <p>Click the button in the bottom corner to speak with Riley, our AI Assistant.</p>
     </div>
 
     <script>
-        const assistantId = "e6dec738-840f-4932-85b4-421b2a7bdb0c"; 
-        const publicApiKey = "1afd8b82-91a8-4690-9fdc-11f984d06807";
-        let vapi = null;
-        let isCalling = false;
+        var vapiInstance = null;
+        
+        // 1. PASTE YOUR DATA HERE
+        const assistant = "PASTE_YOUR_ASSISTANT_ID_HERE"; 
+        const apiKey = "PASTE_YOUR_PUBLIC_KEY_HERE"; 
 
-        // FORCE INITIALIZATION
-        async function startEngine() {
-            if (window.Vapi) {
-                vapi = new Vapi(publicApiKey);
-                document.getElementById('log').innerText = "Status: RILEY CONNECTED";
-                const btn = document.getElementById('mainBtn');
-                btn.disabled = false;
-                btn.innerText = "Talk to Riley";
-                
-                vapi.on('call-start', () => { isCalling = true; btn.innerText = "Riley Listening..."; });
-                vapi.on('call-end', () => { isCalling = false; btn.innerText = "Talk to Riley"; });
-            } else {
-                setTimeout(startEngine, 500);
-            }
-        }
+        // 2. BUTTON DESIGN
+        const buttonConfig = {
+            position: "bottom-right",
+            offset: "40px",
+            width: "60px",
+            height: "60px",
+            idle: {
+                color: "rgb(93, 254, 202)",
+                type: "pill",
+                title: "Talk to Riley",
+                subtitle: "Wellness Assistant",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone.svg",
+            },
+            loading: {
+                color: "rgb(93, 124, 202)",
+                type: "pill",
+                title: "Connecting...",
+                subtitle: "Please wait",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg",
+            },
+            active: {
+                color: "rgb(255, 71, 87)",
+                type: "pill",
+                title: "Riley is Listening",
+                subtitle: "Click to end",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg",
+            },
+        };
 
-        async function handleCall() {
-            if (isCalling) { vapi.stop(); } else {
-                try {
-                    // This forces the browser to "Handshake" with Riley
-                    await navigator.mediaDevices.getUserMedia({ audio: true });
-                    vapi.start(assistantId);
-                } catch (e) { alert("Mic required!"); }
-            }
-        }
-        startEngine();
+        // 3. THE HANDSHAKE SCRIPT
+        (function (d, t) {
+            var g = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+            g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+            g.defer = true;
+            g.async = true;
+            s.parentNode.insertBefore(g, s);
+
+            g.onload = function () {
+                vapiInstance = window.vapiSDK.run({
+                    apiKey: apiKey,
+                    assistant: assistant,
+                    config: buttonConfig,
+                });
+
+                // Check for errors in the console
+                vapiInstance.on('error', (e) => {
+                    console.error('Vapi Error:', e);
+                });
+            };
+        })(document, "script");
     </script>
-</body>
+    </body>
 </html>

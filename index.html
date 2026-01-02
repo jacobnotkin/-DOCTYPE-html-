@@ -3,142 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI VOICEINFRA | SMB Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>AI Call Port | Small Business AI Connector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #ff6b00; --green: #5dfe7b; --border: #30363d; --text: #ffffff; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --p-orange: #f97316; --p-blue: #3b82f6; }
+        body { 
+            background: #06080f; 
+            background-image: radial-gradient(circle at 50% 50%, #111827 0%, #06080f 100%);
+            color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+
+        .command-center {
+            width: 100%; max-width: 1100px; padding: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.7);
+            position: relative;
+        }
+
+        @media (min-width: 768px) { .command-center { padding: 40px; } }
+
+        .pipeline-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px; 
+            margin: 30px 0; 
+        }
         
-        /* Sidebar Navigation */
-        .sidebar { width: 80px; background: #010409; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 30px; }
-        .nav-icon { width: 32px; height: 32px; background: #21262d; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
-        .nav-icon.active { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,107,0,0.3); }
-
-        .main { flex-grow: 1; padding: 40px; display: flex; flex-direction: column; position: relative; }
+        @media (min-width: 640px) { .pipeline-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .pipeline-grid { grid-template-columns: repeat(6, 1fr); } }
         
-        /* Header & Status */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .brand { font-weight: 900; font-size: 1.3rem; letter-spacing: 1px; }
-        .brand span { color: var(--accent); }
-        .badge { border: 1px solid var(--border); padding: 6px 16px; border-radius: 20px; font-size: 10px; display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
+        .step-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 8px; border-radius: 16px; text-align: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .step-card:hover { border-color: var(--p-orange); background: rgba(249, 115, 22, 0.05); }
+        .step-card.active { 
+            background: linear-gradient(135deg, #f97316, #ea580c); 
+            border-color: #ffedd5; box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3);
+        }
 
-        /* Hero Section */
-        h1 { font-size: 3.8rem; font-weight: 900; margin: 0; line-height: 1.1; }
-        .sub { color: #8b949e; font-size: 1.1rem; margin-top: 15px; max-width: 550px; }
+        .price-panel {
+            background: linear-gradient(145deg, #0f172a, #020617);
+            border: 2px solid rgba(249, 115, 22, 0.3);
+            border-radius: 30px; padding: 30px;
+        }
 
-        /* Pricing/Action Node */
-        .node-box { position: absolute; right: 50px; top: 120px; background: rgba(255,255,255,0.02); border: 1px solid var(--accent); padding: 35px; border-radius: 24px; text-align: center; width: 260px; }
-        .price { font-size: 2.8rem; font-weight: 900; }
-        .price span { font-size: 1rem; color: #8b949e; }
-        .activate-btn { background: white; color: black; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: 900; cursor: pointer; margin-top: 20px; }
+        .orange-btn {
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            color: white; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; transition: 0.3s;
+        }
+        .orange-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
 
-        /* Dynamic Pipeline & Menus */
-        .pipeline-container { margin-top: auto; }
-        .pipeline { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
-        .step { background: #21262d; border: 1px solid var(--border); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; }
-        .step.active { border-color: var(--accent); background: rgba(255,107,0,0.1); }
-        .step-num { font-size: 9px; color: var(--accent); font-weight: 900; display: block; }
-        .step-name { font-size: 11px; font-weight: 700; display: block; margin-top: 4px; }
-
-        /* Dropdown Menus for Buttons */
-        .menu-overlay { display: none; position: absolute; bottom: 80px; left: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 180px; padding: 10px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .menu-item { padding: 10px; font-size: 11px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { background: var(--accent); color: white; }
-
-        /* Terminal Logs */
-        .terminal { background: #010409; border: 1px solid var(--border); border-radius: 12px; padding: 15px; font-family: 'Courier New', monospace; font-size: 11px; color: #8b949e; margin-top: 20px; }
-        .terminal b { color: var(--green); }
+        .status-bar { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #64748b; }
+        
+        .gemini-sig {
+            margin-top: 30px; font-size: 9px; font-weight: 700; color: #334155;
+            text-transform: uppercase; letter-spacing: 3px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .gemini-sig span { color: #60a5fa; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="nav-icon active"></div>
-        <div class="nav-icon"></div>
-        <div class="nav-icon"></div>
-    </div>
+    <form id="infraForm" action="https://formspree.io/f/mqekvldj" method="POST" style="display:none;">
+        <input type="text" name="region" id="f_region">
+        <input type="text" name="industry" id="f_industry">
+        <input type="text" name="role" id="f_role">
+        <input type="text" name="brand" id="f_brand">
+        <input type="text" name="voice" id="f_voice">
+    </form>
 
-    <div class="main">
-        <div class="header">
-            <div class="brand"><span>AI</span> VOICEINFRA</div>
-            <div class="badge"><div class="dot"></div> SMB INFRASTRUCTURE ACTIVE</div>
-        </div>
-
-        <h1>Autonomous Voice<br><span style="color:var(--accent)">Small Biz Nodes.</span></h1>
-        <p class="sub">Bridging local businesses to high-performance AI receptionists. Deploy your infrastructure in seconds.</p>
-
-        <div class="node-box">
-            <div class="price">$199<span>/mo</span></div>
-            <p style="font-size: 9px; color: #8b949e; letter-spacing: 1px;">ALL-IN-ONE SMB BUNDLE</p>
-            <button class="activate-btn" onclick="activateAgent()">ACTIVATE NODE</button>
-        </div>
-
-        <div class="pipeline-container">
-            <div style="font-size: 9px; color: #8b949e; margin-bottom: 12px; letter-spacing: 2px;">NODE CONFIGURATION PIPELINE</div>
-            <div class="pipeline">
-                <div class="step" onclick="toggleMenu('regionMenu')">
-                    <span class="step-num">01 REGION</span><span class="step-name" id="label-region">US-EAST</span>
-                    <div id="regionMenu" class="menu-overlay">
-                        <div class="menu-item" onclick="updateSel('region', 'US-EAST')">US-EAST</div>
-                        <div class="menu-item" onclick="updateSel('region', 'US-WEST')">US-WEST</div>
-                        <div class="menu-item" onclick="updateSel('region', 'EUROPE')">EUROPE</div>
-                    </div>
+    <div class="command-center relative overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-64 h-64 bg-orange-600/10 blur-[100px]"></div>
+        
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div class="text-center md:text-left">
+                <div class="flex items-center gap-3 justify-center md:justify-start mb-2">
+                    <div class="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center font-black italic text-white">AI</div>
+                    <span class="text-xl font-black tracking-tighter uppercase text-white">CALL <span class="text-orange-500">PORT</span></span>
                 </div>
-                <div class="step active" onclick="toggleMenu('industryMenu')">
-                    <span class="step-num">02 INDUSTRY</span><span class="step-name" id="label-industry">WELLNESS</span>
-                    <div id="industryMenu" class="menu-overlay">
-                        <div class="menu-item" onclick="updateSel('industry', 'WELLNESS')">WELLNESS</div>
-                        <div class="menu-item" onclick="updateSel('industry', 'AUTO')">AUTOMOTIVE</div>
-                        <div class="menu-item" onclick="updateSel('industry', 'RE-ESTATE')">REAL ESTATE</div>
-                    </div>
+                <p class="status-bar uppercase">Instant Agent Connector • v3.0</p>
+            </div>
+            
+            <div class="flex items-center gap-4 px-4 py-2 bg-white/5 rounded-2xl border border-white/5">
+                <div class="text-right">
+                    <p class="text-[9px] text-slate-500 font-bold uppercase">Network Status</p>
+                    <p class="text-xs font-bold text-orange-400 italic">aicallport.com</p>
                 </div>
-                <div class="step"><span class="step-num">03 ROLE</span><span class="step-name">RECEPTION</span></div>
-                <div class="step"><span class="step-num">04 IDENTITY</span><span class="step-name">RILEY</span></div>
-                <div class="step"><span class="step-num">05 VOICE</span><span class="step-name">HD FEMALE</span></div>
-                <div class="step"><span class="step-num">06 TEST</span><span class="step-name">READY</span></div>
-                <div class="step"><span class="step-num">07 ACTIVATE</span><span class="step-name">LOCK</span></div>
+                <div class="w-[1px] h-6 bg-white/10"></div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-[9px] font-black text-white uppercase">Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid lg:grid-cols-5 gap-8 items-center">
+            <div class="lg:col-span-3 text-center lg:text-left">
+                <h1 class="text-4xl md:text-5xl font-black leading-tight tracking-tighter mb-6 text-white">
+                    AI Call Port is a world wide AI Agents instant connector for small businesses.
+                </h1>
+                <p class="text-slate-400 text-base md:text-lg mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                    Connect your business phone in <span class="text-white font-bold">6 easy steps</span> and automate your front desk instantly.
+                </p>
+                <button onclick="triggerModal(1)" class="orange-btn px-10 py-5 rounded-2xl shadow-xl w-full md:w-auto">Initialize Connection</button>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="price-panel text-center">
+                    <h3 class="text-orange-500 font-black text-[10px] uppercase tracking-[0.3em] mb-4">Small Business Node</h3>
+                    <div class="flex justify-center items-baseline gap-1 mb-4 text-white">
+                        <span class="text-6xl font-black">$199</span>
+                        <span class="text-slate-500 text-lg">/mo</span>
+                    </div>
+                    <div class="space-y-2 mb-8">
+                        <p class="text-sm font-bold text-white uppercase italic">All AI Agents Included</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Connect to Any Phone Line</p>
+                    </div>
+                    <button onclick="triggerModal(1)" class="w-full py-4 bg-white text-black rounded-xl font-black text-xs uppercase hover:bg-orange-600 hover:text-white transition-all">Start 6-Step Setup</button>
+                </div>
             </div>
         </div>
 
-        <div class="terminal" id="term">
-            > <b>STATUS:</b> SMB Node connected (d4fcbe60...)<br>
-            > <b>READY:</b> Infrastructure awaiting industry lock...
+        <div class="mt-12 pt-8 border-t border-white/5">
+            <p class="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 italic">Connection Pipeline (6 Steps)</p>
+            <div class="pipeline-grid">
+                <div onclick="triggerModal(1)" id="s1" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-2">01 Market</p><p id="v1" class="font-black text-white text-xs opacity-20 italic uppercase">Select</p></div>
+                <div onclick="triggerModal(2)" id="s2" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-2">02 Industry</p><p id="v2" class="font-black text-white text-xs opacity-20 italic uppercase">Select</p></div>
+                <div onclick="triggerModal(3)" id="s3" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-2">03 Identity</p><p id="v4" class="font-black text-white text-xs opacity-20 italic uppercase">Select</p></div>
+                <div onclick="triggerModal(5)" id="s4" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-2">04 Voice</p><p id="v5" class="font-black text-white text-xs opacity-20 italic uppercase">Select</p></div>
+                <div onclick="runTest()" id="s5" class="step-card border-blue-500/30"><p class="text-[9px] font-bold text-blue-400 uppercase mb-2">05 Verify</p><p id="v6" class="font-black text-white text-xs italic uppercase">Ready</p></div>
+                <div onclick="triggerModal(7)" id="s6" class="step-card border-green-500/30"><p class="text-[9px] font-bold text-green-500 uppercase mb-2">06 Launch</p><p id="v7" class="font-black text-white text-xs opacity-20 italic uppercase">Lock</p></div>
+            </div>
         </div>
 
-        <div style="text-align: center; font-size: 9px; color: #21262d; margin-top: 15px; letter-spacing: 4px;">DESIGNED BY GEMINI</div>
+        <div id="logs-container" class="mt-8 bg-black/40 border border-white/5 rounded-2xl p-6 font-mono text-[10px] text-slate-500 overflow-hidden">
+            <div id="logs">> AI Call Port Bridge initialized. Awaiting user input...</div>
+        </div>
+
+        <div class="gemini-sig">Built for AI Call Port by <span>Google Gemini</span></div>
     </div>
 
     <script>
-        const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3";
-        const assistantId = "e95dca20-93f2-46f0-b014-3a885586fa65";
+        const selections = { region: "", industry: "", role: "Standard", brand: "", voice: "" };
+        const menus = {
+            1: { t: "Select Market", k: "region", opts: ["United States", "United Kingdom", "Canada", "Global"] },
+            2: { t: "Business Type", k: "industry", opts: ["Medical", "Legal", "Real Estate", "Home Services"] },
+            5: { t: "Voice Persona", k: "voice", opts: ["Professional", "Friendly", "Direct"] }
+        };
 
-        // Load Vapi SDK
-        (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";g.defer=true;g.async=true;s.parentNode.insertBefore(g,s);})(document,"script");
+        function triggerModal(step) {
+            const m = document.getElementById('setupModal');
+            const content = document.getElementById('mContent');
+            m.style.display = 'flex';
+            content.innerHTML = "";
 
-        function toggleMenu(id) {
-            const menu = document.getElementById(id);
-            const isVisible = menu.style.display === 'block';
-            document.querySelectorAll('.menu-overlay').forEach(m => m.style.display = 'none');
-            menu.style.display = isVisible ? 'none' : 'block';
+            if (step == 1 || step == 2 || step == 5) {
+                const config = menus[step];
+                document.getElementById('mTitle').innerText = config.t;
+                config.opts.forEach(opt => {
+                    let b = document.createElement('button');
+                    b.className = "w-full py-4 px-6 rounded-xl bg-white/5 text-white font-bold hover:bg-orange-600 transition-all text-left flex justify-between items-center";
+                    b.innerHTML = `<span>${opt}</span> <span class="text-orange-500">→</span>`;
+                    b.onclick = () => finishStep(step, opt, config.k);
+                    content.appendChild(b);
+                });
+            } else if (step == 3) {
+                document.getElementById('mTitle').innerText = "Business Name";
+                content.innerHTML = `<input id="nameIn" placeholder="ENTER BRAND" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-white mb-6 text-center font-black text-xl outline-none focus:border-orange-500"><button onclick="finishStep(3, document.getElementById('nameIn').value, 'brand')" class="w-full bg-orange-600 p-5 rounded-xl text-white font-black uppercase tracking-widest">Link Brand</button>`;
+            } else if (step == 7) {
+                document.getElementById('mTitle').innerText = "Activate AI Port";
+                content.innerHTML = `<p class="text-slate-400 mb-6 font-bold uppercase text-[10px]">Ready to connect your business phone?</p><button id="finalBtn" onclick="activateSystem()" class="w-full bg-orange-600 p-8 rounded-3xl text-white font-black text-2xl shadow-2xl">GO LIVE</button>`;
+            }
         }
 
-        function updateSel(category, value) {
-            document.getElementById('label-' + category).innerText = value;
-            const term = document.getElementById('term');
-            term.innerHTML += `<br>> <b>CONFIG:</b> ${category.toUpperCase()} set to ${value}`;
+        function closeM() { document.getElementById('setupModal').style.display = 'none'; }
+        
+        function finishStep(s, val, key) {
+            if(!val) return;
+            selections[key] = val;
+            const displayId = (s == 5) ? 'v5' : (s == 3) ? 'v4' : `v${s}`;
+            const cardId = (s == 5) ? 's4' : (s == 3) ? 's3' : `s${s}`;
+            
+            document.getElementById(displayId).innerText = val.toUpperCase().substring(0,8);
+            document.getElementById(displayId).classList.remove('opacity-20');
+            document.getElementById(cardId).classList.add('active');
+            
+            const log = document.createElement('div');
+            log.innerHTML = `<span class="text-orange-500">></span> ${key.toUpperCase()} SYNCED: ${val.toUpperCase()}`;
+            document.getElementById('logs').prepend(log);
+            closeM();
         }
 
-        function activateAgent() {
-            window.vapiSDK.run({
-                apiKey: apiKey,
-                assistant: assistantId,
-                config: {
-                    position: "bottom-right",
-                    idle: { title: "Talk to Riley", subtitle: "SMB Receptionist", color: "#ff6b00" }
-                }
-            });
+        function runTest() {
+            document.getElementById('v6').innerText = "VERIFYING...";
+            setTimeout(() => { 
+                document.getElementById('v6').innerText = "VERIFIED"; 
+                document.getElementById('s5').classList.add('active'); 
+                const log = document.createElement('div');
+                log.innerHTML = `<span class="text-blue-400">></span> SYSTEM VERIFIED: READY FOR LAUNCH`;
+                document.getElementById('logs').prepend(log);
+            }, 1000);
+        }
+
+        function activateSystem() {
+            const btn = document.getElementById('finalBtn');
+            btn.innerText = "CONNECTING...";
+            setTimeout(() => {
+                closeM();
+                document.getElementById('v7').innerText = "LIVE";
+                document.getElementById('v7').classList.remove('opacity-20');
+                document.getElementById('s6').classList.add('active');
+                const log = document.createElement('div');
+                log.className = "text-orange-400 font-black";
+                log.innerHTML = `> SUCCESS: AI CALL PORT ACTIVE FOR ${selections.brand.toUpperCase()}`;
+                document.getElementById('logs').prepend(log);
+            }, 1500);
         }
     </script>
+
+    <div id="setupModal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] hidden items-center justify-center p-4 text-white">
+        <div class="bg-[#0f172a] border border-orange-500/20 max-w-lg w-full p-8 rounded-[40px] text-center">
+            <h2 id="mTitle" class="text-2xl font-black mb-8 tracking-tighter italic"></h2>
+            <div id="mContent" class="grid gap-3"></div>
+            <button onclick="closeM()" class="mt-8 text-slate-600 font-bold uppercase text-[9px] tracking-widest hover:text-white transition">Exit</button>
+        </div>
+    </div>
 </body>
 </html>

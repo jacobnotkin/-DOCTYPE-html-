@@ -3,131 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Call Port | Small Business AI Agent Connector</title>
+    <title>AI Call Port | Global Beta Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p-orange: #f97316; --p-blue: #3b82f6; }
+        :root { --p-orange: #f97316; }
         body { 
-            background: #06080f; 
-            background-image: radial-gradient(circle at 50% 50%, #111827 0%, #06080f 100%);
-            color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;
-            padding: 20px;
+            background: #06080f; background-image: radial-gradient(circle at 50% 50%, #111827 0%, #06080f 100%);
+            color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 20px;
+            display: flex; align-items: center; justify-content: center;
         }
-
         .command-center {
-            width: 100%; max-width: 1100px; padding: 40px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 40px;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.7);
-            position: relative;
+            width: 100%; max-width: 1100px; padding: 40px; background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 40px;
         }
-
         .step-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px 8px; border-radius: 16px; text-align: center;
-            cursor: pointer; transition: 0.3s;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 8px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.3s;
         }
-        .step-card:hover { border-color: var(--p-orange); background: rgba(249, 115, 22, 0.05); }
-        .step-card.active { 
-            background: linear-gradient(135deg, #f97316, #ea580c); 
-            border-color: #ffedd5; box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3);
-        }
-
-        .orange-btn {
-            background: linear-gradient(90deg, #f97316, #ea580c);
-            color: white; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1px; transition: 0.3s;
-        }
-        .orange-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
-
+        .step-card.active { background: linear-gradient(135deg, #f97316, #ea580c); border-color: #ffedd5; }
+        .orange-btn { background: linear-gradient(90deg, #f97316, #ea580c); color: white; font-weight: 800; transition: 0.3s; }
+        .dev-badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #64748b; }
+        .active-badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; background: rgba(34,197,94,0.2); color: #4ade80; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div id="app-container" class="command-center relative overflow-hidden">
-        <div class="absolute -top-24 -left-24 w-64 h-64 bg-orange-600/10 blur-[100px]"></div>
-        
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div class="absolute top-0 left-0 w-full bg-orange-600/20 text-orange-500 text-[10px] font-black py-2 text-center uppercase tracking-[0.3em]">
+            Global Beta Phase 1: Only 100 Seats Remaining at Beta Pricing
+        </div>
+
+        <header class="flex flex-col md:flex-row justify-between items-center mt-8 mb-10 gap-6">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center font-black italic text-white">AI</div>
                 <span class="text-xl font-black tracking-tighter uppercase text-white">CALL <span class="text-orange-500">PORT</span></span>
             </div>
-            <div class="flex items-center gap-4 px-4 py-2 bg-white/5 rounded-2xl border border-white/5">
-                <div class="text-right">
-                    <p class="text-[9px] text-slate-500 font-bold uppercase">System Status</p>
-                    <p class="text-xs font-bold text-orange-400 italic">aicallport.com</p>
-                </div>
-                <div class="w-[1px] h-6 bg-white/10"></div>
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="text-[9px] font-black text-white uppercase tracking-widest">Active</span>
-                </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl border border-white/5">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-[9px] font-black text-white uppercase tracking-widest italic">11 Global Nodes Active</span>
             </div>
         </header>
 
         <div id="hero-view">
             <div class="grid lg:grid-cols-5 gap-8 items-center">
-                <div class="lg:col-span-3 text-center lg:text-left">
+                <div class="lg:col-span-3">
                     <h1 class="text-4xl md:text-5xl font-black leading-tight tracking-tighter mb-6 text-white">
-                        AI Call Port is a world wide AI Agents instant connector for small businesses.
+                        The World Wide <span class="text-orange-500">AI Agent</span> Infrastructure.
                     </h1>
-                    <p class="text-slate-400 text-lg mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                        Connect your business phone in <span class="text-white font-bold">6 easy steps.</span> No technical skills required.
+                    <p class="text-slate-400 text-lg mb-8 leading-relaxed">
+                        Small business AI integration is no longer a luxury. Secure your local node before the beta closes.
                     </p>
-                    <button onclick="triggerModal(1)" class="orange-btn px-10 py-5 rounded-2xl shadow-xl w-full md:w-auto">Start Connection</button>
+                    <button onclick="triggerModal(1)" class="orange-btn px-10 py-5 rounded-2xl shadow-xl w-full md:w-auto uppercase">Secure Beta Access</button>
                 </div>
 
                 <div class="lg:col-span-2">
-                    <div class="bg-black/40 border-2 border-orange-500/30 rounded-[30px] p-8 text-center">
-                        <h3 class="text-orange-500 font-black text-[10px] uppercase tracking-[0.3em] mb-4">Infrastructure Plan</h3>
-                        <div class="flex justify-center items-baseline gap-1 mb-4 text-white">
+                    <div class="bg-black/40 border-2 border-orange-500/30 rounded-[30px] p-8 text-center relative overflow-hidden">
+                        <div class="absolute -right-8 top-4 rotate-45 bg-orange-500 text-white font-black text-[9px] px-10 py-1">SAVE 60%</div>
+                        <h3 class="text-slate-500 font-bold text-[10px] uppercase tracking-widest mb-2">Beta Pricing</h3>
+                        <div class="flex justify-center items-baseline gap-2 mb-4 text-white">
+                            <span class="text-slate-600 text-2xl line-through">$499</span>
                             <span class="text-6xl font-black">$199</span>
                             <span class="text-slate-500 text-lg">/mo</span>
                         </div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">Unlimited Calls • 24/7 Connectivity</p>
-                        <button onclick="triggerModal(1)" class="w-full py-4 bg-white text-black rounded-xl font-black text-xs uppercase hover:bg-orange-600 hover:text-white transition-all">Select Node</button>
+                        <p class="text-[10px] text-orange-400 font-bold uppercase tracking-widest mb-6">Lock-in Lifetime Beta Rate</p>
+                        <button onclick="triggerModal(1)" class="w-full py-4 bg-white text-black rounded-xl font-black text-xs uppercase">Join the Network</button>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-12 pt-8 border-t border-white/5">
-                <p class="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 italic">Configuration Pipeline</p>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div onclick="triggerModal(1)" id="s1" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">01 Country</p><p id="v1" class="font-black text-white text-[10px] opacity-20 italic">SELECT</p></div>
-                    <div onclick="triggerModal(2)" id="s2" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">02 Industry</p><p id="v2" class="font-black text-white text-[10px] opacity-20 italic">SELECT</p></div>
-                    <div onclick="triggerModal(3)" id="s3" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">03 Business</p><p id="v3" class="font-black text-white text-[10px] opacity-20 italic">INFO</p></div>
-                    <div onclick="triggerModal(4)" id="s4" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">04 Agent</p><p id="v4" class="font-black text-white text-[10px] opacity-20 italic">CHOOSE</p></div>
-                    <div onclick="triggerModal(5)" id="s5" class="step-card border-blue-500/30"><p class="text-[9px] font-bold text-blue-400 uppercase mb-1">05 Demo</p><p id="v5" class="font-black text-white text-[10px] opacity-20 italic">FREE CALL</p></div>
-                    <div onclick="triggerModal(6)" id="s6" class="step-card border-green-500/30"><p class="text-[9px] font-bold text-green-500 uppercase mb-1">06 Launch</p><p id="v6" class="font-black text-white text-[10px] opacity-20 italic">ACTIVATE</p></div>
-                </div>
+            <div class="mt-12 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div onclick="triggerModal(1)" id="s1" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">01 Node</p><p id="v1" class="font-black text-white text-[10px] opacity-20 italic">SELECT</p></div>
+                <div onclick="triggerModal(2)" id="s2" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">02 Industry</p><p id="v2" class="font-black text-white text-[10px] opacity-20 italic">SELECT</p></div>
+                <div onclick="triggerModal(3)" id="s3" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">03 Business</p><p id="v3" class="font-black text-white text-[10px] opacity-20 italic">INFO</p></div>
+                <div onclick="triggerModal(4)" id="s4" class="step-card"><p class="text-[9px] font-bold text-orange-500 uppercase mb-1">04 Agent</p><p id="v4" class="font-black text-white text-[10px] opacity-20 italic">CHOOSE</p></div>
+                <div onclick="triggerModal(5)" id="s5" class="step-card border-blue-500/30"><p class="text-[9px] font-bold text-blue-400 uppercase mb-1">05 Demo</p><p id="v5" class="font-black text-white text-[10px] opacity-20 italic">FREE CALL</p></div>
+                <div onclick="triggerModal(6)" id="s6" class="step-card border-green-500/30"><p class="text-[9px] font-bold text-green-500 uppercase mb-1">06 Launch</p><p id="v6" class="font-black text-white text-[10px] opacity-20 italic">ACTIVATE</p></div>
             </div>
         </div>
     </div>
 
     <div id="setupModal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] hidden items-center justify-center p-4">
-        <div class="bg-[#0f172a] border border-orange-500/20 max-w-lg w-full p-8 rounded-[40px] text-center relative">
-            <h2 id="mTitle" class="text-2xl font-black text-white mb-6 italic tracking-tighter"></h2>
+        <div class="bg-[#0f172a] border border-orange-500/20 max-w-lg w-full p-8 rounded-[40px] relative">
+            <h2 id="mTitle" class="text-2xl font-black text-white mb-6 italic tracking-tighter text-center"></h2>
             <div id="mContent" class="grid gap-3"></div>
-            <button onclick="closeM()" class="mt-8 text-slate-600 font-bold uppercase text-[9px] tracking-widest hover:text-white transition">Back to Bridge</button>
+            <div class="text-center mt-6">
+                <button onclick="closeM()" class="text-slate-600 font-bold uppercase text-[9px] tracking-widest hover:text-white transition">Return to Dashboard</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const selections = { country: "", industry: "", business: "", phone: "", agent: "" };
+        const activeCountries = ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "UAE", "Singapore", "Spain", "Italy", "Japan"];
+        const allCountries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Belgium", "Brazil", "Bulgaria", "Canada", "Chile", "China", "Colombia", "Denmark", "Egypt", "Finland", "France", "Germany", "Greece", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Mexico", "Netherlands", "New Zealand", "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Saudi Arabia", "Singapore", "South Africa", "South Korea", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "UAE", "United Kingdom", "United States", "Vietnam"];
         
-        const longLists = {
-            countries: ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "UAE", "Singapore", "Spain", "Italy", "Japan", "Mexico", "Brazil"],
-            industries: ["Dental Office", "Roofing Company", "Real Estate Broker", "Hair Salon", "Law Firm", "Medical Clinic", "HVAC Services", "Pet Grooming", "Fitness Center", "Restaurant"],
-            agents: ["AI Receptionist", "Appointment Booker", "Lead Qualifier", "Customer Support"]
-        };
+        const industries = [
+            { name: "Dental Office", status: "LIVE" },
+            { name: "Roofing Company", status: "LIVE" },
+            { name: "Real Estate", status: "LIVE" },
+            { name: "Law Firm", status: "BETA" },
+            { name: "Auto Repair", status: "BETA" },
+            { name: "Medical Clinic", status: "DEV" }
+        ];
+
+        const selections = { country: "", industry: "", business: "", phone: "", agent: "" };
 
         function triggerModal(step) {
             const m = document.getElementById('setupModal');
@@ -136,54 +117,77 @@
             m.style.display = 'flex';
             content.innerHTML = "";
 
-            if (step === 1 || step === 2 || step === 4) {
-                const type = step === 1 ? 'countries' : (step === 2 ? 'industries' : 'agents');
-                const key = step === 1 ? 'country' : (step === 2 ? 'industry' : 'agent');
-                title.innerText = step === 1 ? "Operating Country" : (step === 2 ? "Select Industry" : "Agent Role");
-
-                const searchInput = document.createElement('input');
-                searchInput.placeholder = "Search options...";
-                searchInput.className = "w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white mb-4 outline-none focus:border-orange-500";
+            if (step === 1) {
+                title.innerText = "Global Node Selection";
+                const searchInput = createSearch("Search 190+ countries...");
                 content.appendChild(searchInput);
-
-                const listDiv = document.createElement('div');
-                listDiv.className = "max-h-64 overflow-y-auto grid gap-2 custom-scrollbar pr-2";
-                
-                const render = (filter = "") => {
+                const listDiv = createListContainer();
+                const render = (f = "") => {
                     listDiv.innerHTML = "";
-                    longLists[type].filter(i => i.toLowerCase().includes(filter.toLowerCase())).forEach(opt => {
+                    allCountries.filter(c => c.toLowerCase().includes(f.toLowerCase())).forEach(c => {
+                        const isActive = activeCountries.includes(c);
                         let b = document.createElement('button');
-                        b.className = "w-full py-3 px-6 rounded-xl bg-white/5 text-white font-bold hover:bg-orange-600 transition-all text-left flex justify-between items-center";
-                        b.innerHTML = `<span>${opt}</span> <span class="text-orange-500">→</span>`;
-                        b.onclick = () => finishStep(step, opt, key);
+                        b.className = `w-full py-3 px-5 rounded-xl flex justify-between items-center transition-all ${isActive ? 'bg-white/5 hover:bg-orange-600' : 'bg-white/2 cursor-not-allowed opacity-40'}`;
+                        b.innerHTML = `
+                            <span class="text-sm font-bold text-white">${c}</span>
+                            <span class="${isActive ? 'active-badge' : 'dev-badge'}">${isActive ? 'ACTIVE NODE' : 'IN DEV'}</span>
+                        `;
+                        if(isActive) b.onclick = () => finishStep(1, c, 'country');
                         listDiv.appendChild(b);
                     });
                 };
                 searchInput.oninput = (e) => render(e.target.value);
-                render();
-                content.appendChild(listDiv);
+                render(); content.appendChild(listDiv);
 
+            } else if (step === 2) {
+                title.innerText = "Industry Protocol";
+                industries.forEach(ind => {
+                    let b = document.createElement('button');
+                    const isLive = ind.status === 'LIVE';
+                    b.className = `w-full py-4 px-6 rounded-xl flex justify-between items-center ${isLive ? 'bg-white/5 hover:bg-orange-600' : 'bg-white/2 opacity-40 cursor-not-allowed'}`;
+                    b.innerHTML = `<span class="font-bold text-white">${ind.name}</span> <span class="text-[8px] font-black uppercase tracking-widest ${isLive ? 'text-green-400' : 'text-slate-500'}">${ind.status}</span>`;
+                    if(isLive) b.onclick = () => finishStep(2, ind.name, 'industry');
+                    content.appendChild(b);
+                });
             } else if (step === 3) {
                 title.innerText = "Business Credentials";
                 content.innerHTML = `
                     <input id="in_name" placeholder="COMPANY NAME" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-white mb-3 outline-none focus:border-orange-500 uppercase font-bold text-center">
-                    <input id="in_phone" placeholder="BUSINESS PHONE NUMBER" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-white mb-6 outline-none focus:border-orange-500 text-center">
-                    <button onclick="saveStep3()" class="orange-btn w-full p-5 rounded-xl font-black text-lg">Sync Information</button>`;
+                    <input id="in_phone" placeholder="BUSINESS PHONE" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-white mb-6 outline-none focus:border-orange-500 text-center">
+                    <button onclick="saveStep3()" class="orange-btn w-full p-5 rounded-xl font-black text-lg">Sync Node</button>`;
+            } else if (step === 4) {
+                title.innerText = "Agent Configuration";
+                ["Receptionist", "Sales Qualifier", "Support Specialist"].forEach(a => {
+                    let b = document.createElement('button');
+                    b.className = "w-full py-4 bg-white/5 rounded-xl text-white font-bold hover:bg-orange-600 transition";
+                    b.innerText = a;
+                    b.onclick = () => finishStep(4, a, 'agent');
+                    content.appendChild(b);
+                });
             } else if (step === 5) {
-                title.innerText = "Live Demo Call";
-                content.innerHTML = `
-                    <div class="bg-orange-600/10 border border-orange-500/50 p-6 rounded-3xl mb-4">
-                        <p class="text-[10px] text-orange-500 font-bold mb-2 uppercase tracking-widest">Dial your test line:</p>
-                        <p class="text-2xl font-black text-white tracking-widest">+1 (888) AI-PORT-1</p>
-                    </div>
-                    <p class="text-slate-400 text-sm mb-8">Call now to hear how your ${selections.industry || 'Business'} AI handles a customer call.</p>
-                    <button onclick="finishStep(5, 'VERIFIED', 'demo')" class="w-full bg-white text-black p-5 rounded-xl font-black uppercase">I have finished the call</button>`;
+                title.innerText = "Free Beta Demo";
+                content.innerHTML = `<div class="bg-orange-600/10 border border-orange-500/50 p-6 rounded-3xl mb-4 text-center">
+                    <p class="text-[10px] text-orange-500 font-bold mb-2 uppercase tracking-widest">Dial Node Test:</p>
+                    <p class="text-2xl font-black text-white tracking-widest">+1 (888) AI-PORT-1</p>
+                </div><button onclick="finishStep(5, 'VERIFIED', 'demo')" class="w-full bg-white text-black p-5 rounded-xl font-black uppercase">Test Complete</button>`;
             } else if (step === 6) {
-                title.innerText = "Final Launch";
-                content.innerHTML = `
-                    <p class="text-slate-400 mb-8 font-bold">Deploy your permanent AI Port for $199/month.</p>
-                    <button onclick="launchDashboard()" class="orange-btn w-full p-6 rounded-3xl text-2xl font-black shadow-2xl">Pay & Go Live</button>`;
+                title.innerText = "Lock-in Beta Price";
+                content.innerHTML = `<p class="text-slate-400 mb-6 text-center font-bold">Deploy your permanent AI Port for <span class="text-white">$199/mo</span> (Standard $499).</p>
+                    <button onclick="launchDashboard()" class="orange-btn w-full p-6 rounded-3xl text-2xl font-black shadow-2xl">Confirm & Launch</button>`;
             }
+        }
+
+        function createSearch(p) {
+            const i = document.createElement('input');
+            i.placeholder = p;
+            i.className = "w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white mb-4 outline-none focus:border-orange-500";
+            return i;
+        }
+
+        function createListContainer() {
+            const d = document.createElement('div');
+            d.className = "max-h-64 overflow-y-auto grid gap-2 custom-scrollbar pr-2";
+            return d;
         }
 
         function finishStep(s, val, key) {
@@ -198,11 +202,7 @@
         function saveStep3() {
             const n = document.getElementById('in_name').value;
             const p = document.getElementById('in_phone').value;
-            if(n && p) {
-                selections.business = n;
-                selections.phone = p;
-                finishStep(3, n, 'business');
-            }
+            if(n && p) { selections.business = n; selections.phone = p; finishStep(3, n, 'business'); }
         }
 
         function closeM() { document.getElementById('setupModal').style.display = 'none'; }
@@ -211,38 +211,15 @@
             closeM();
             document.getElementById('app-container').innerHTML = `
                 <div class="text-center py-6">
-                    <div class="mb-4 inline-flex items-center gap-2 px-4 py-1 bg-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest">● Port Live and operational</div>
+                    <div class="mb-4 inline-flex items-center gap-2 px-4 py-1 bg-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest italic">● Global Node: ${selections.country} Active</div>
                     <h2 class="text-4xl font-black text-white mb-2 uppercase">${selections.business}</h2>
-                    <p class="text-slate-500 text-xs mb-10 tracking-[0.3em]">OPERATIONAL DASHBOARD</p>
-                    
+                    <p class="text-slate-500 text-xs mb-10 tracking-[0.3em]">BETA CONTROL DASHBOARD</p>
                     <div class="grid md:grid-cols-3 gap-6 text-left">
-                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px]">
-                            <p class="text-[10px] font-black text-orange-500 uppercase mb-4">Voice Identity</p>
-                            <select class="w-full bg-black/40 border-none text-white font-bold rounded-xl p-3 outline-none">
-                                <option>Professional Male</option>
-                                <option>Warm Female</option>
-                                <option>Corporate Neutral</option>
-                            </select>
-                        </div>
-                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px]">
-                            <p class="text-[10px] font-black text-orange-500 uppercase mb-4">Port Language</p>
-                            <select class="w-full bg-black/40 border-none text-white font-bold rounded-xl p-3 outline-none">
-                                <option>English (Global)</option>
-                                <option>Spanish (LatAm)</option>
-                                <option>French</option>
-                            </select>
-                        </div>
-                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px] flex flex-col justify-between">
-                            <p class="text-[10px] font-black text-orange-500 uppercase mb-4">Connected Line</p>
-                            <p class="text-white font-bold">${selections.phone}</p>
-                        </div>
+                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px]"><p class="text-[10px] font-black text-orange-500 uppercase mb-4 tracking-widest">Agent Role</p><p class="text-white font-bold uppercase">${selections.agent}</p></div>
+                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px]"><p class="text-[10px] font-black text-orange-500 uppercase mb-4 tracking-widest">Industry Node</p><p class="text-white font-bold uppercase">${selections.industry}</p></div>
+                        <div class="bg-white/5 border border-white/10 p-6 rounded-[30px]"><p class="text-[10px] font-black text-orange-500 uppercase mb-4 tracking-widest">Billing Tier</p><p class="text-green-500 font-bold uppercase">LIFETIME BETA ($199)</p></div>
                     </div>
-                    
-                    <div class="mt-8 bg-black/40 border border-white/5 rounded-[30px] p-10">
-                        <p class="text-slate-500 text-sm italic">Call logs will appear here in real-time as your AI Agent answers customers...</p>
-                    </div>
-                    
-                    <button onclick="location.reload()" class="mt-8 text-slate-600 text-[9px] font-black uppercase tracking-widest hover:text-white transition">Disconnect Port</button>
+                    <div class="mt-8 bg-black/40 border border-white/5 rounded-[30px] p-10"><p class="text-slate-500 text-sm italic">AI Node is listening for incoming calls on ${selections.phone}...</p></div>
                 </div>
             `;
         }

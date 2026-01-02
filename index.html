@@ -3,104 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wellness Partners - Talk to Riley</title>
+    <title>AI VoiceInfra | Command Center v2.2</title>
     <style>
+        :root {
+            --bg-dark: #0a0e14;
+            --card-dark: #161b22;
+            --accent-orange: #ff6b00;
+            --accent-green: #5dfe7b;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 50px;
+        .command-center {
+            background: var(--card-dark);
+            padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            max-width: 400px;
+            border: 1px solid #30363d;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
         }
-        h1 { color: #2d3436; margin-bottom: 10px; }
-        p { color: #636e72; line-height: 1.6; margin-bottom: 30px; }
-        .status-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: #00b894;
-            border-radius: 50%;
-            margin-right: 5px;
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { color: var(--accent-orange); font-weight: bold; font-size: 1.2rem; }
+        .status { color: var(--accent-green); font-size: 0.8rem; }
+        h1 { font-size: 2.5rem; margin: 10px 0; }
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 30px;
         }
+        .node-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .node-btn:hover { border-color: var(--accent-orange); color: white; }
+        .node-btn.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Wellness Partners</h1>
-        <p><span class="status-dot"></span> Riley is ready to assist you. Click the button below to start your session.</p>
+    <div class="command-center">
+        <div class="header">
+            <div class="logo">AI VOICEINFRA</div>
+            <div class="status">● SYSTEM ACTIVE</div>
+        </div>
+        <h1>Connect Your Brand</h1>
+        <p>Select an industry node to activate your autonomous voice agent.</p>
+
+        <div class="pipeline">
+            <button class="node-btn" onclick="selectAgent('wellness', this)">WELLNESS</button>
+            <button class="node-btn" onclick="selectAgent('auto', this)">AUTOMOTIVE</button>
+            <button class="node-btn" onclick="selectAgent('realestate', this)">REAL ESTATE</button>
+            <button class="node-btn" onclick="selectAgent('hospitality', this)">HOSPITALITY</button>
+        </div>
     </div>
 
     <script>
         var vapiInstance = null;
-        
-        // 1. YOUR SPECIFIC VAPI DATA
-        const assistant = "e95dca20-93f2-46f0-b014-3a885586fa65"; 
-        const apiKey = "acbbfa66-260e-48ff-bdc5-477b8fdda1e1"; 
 
-        // 2. BUTTON DESIGN
-        const buttonConfig = {
-            position: "bottom-right",
-            offset: "40px",
-            width: "65px",
-            height: "65px",
-            idle: {
-                color: "rgb(0, 184, 148)",
-                type: "pill",
-                title: "Talk to Riley",
-                subtitle: "Wellness Assistant",
-                icon: "https://unpkg.com/lucide-static@0.321.0/icons/mic.svg",
-            },
-            loading: {
-                color: "rgb(9, 132, 227)",
-                type: "pill",
-                title: "Connecting...",
-                subtitle: "Checking Mic",
-                icon: "https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg",
-            },
-            active: {
-                color: "rgb(214, 48, 49)",
-                type: "pill",
-                title: "Riley is Listening",
-                subtitle: "Click to disconnect",
-                icon: "https://unpkg.com/lucide-static@0.321.0/icons/mic-off.svg",
-            },
+        // 1. YOUR DATA FROM DASHBOARD
+        const apiKey = "d4fcbe60-643b-48c8-9d74-dfb8ff3236f3"; 
+        const assistantLibrary = {
+            wellness: "e95dca20-93f2-46f0-b014-3a885586fa65", // Riley
+            auto: "PASTE_NEW_ID_HERE",
+            realestate: "PASTE_NEW_ID_HERE",
+            hospitality: "PASTE_NEW_ID_HERE"
         };
 
-        // 3. THE HANDSHAKE
+        // 2. LOAD VAPI SDK
         (function (d, t) {
-            var g = d.createElement(t),
-                s = d.getElementsByTagName(t)[0];
+            var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
             g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-            g.defer = true;
-            g.async = true;
+            g.defer = true; g.async = true;
             s.parentNode.insertBefore(g, s);
 
             g.onload = function () {
-                vapiInstance = window.vapiSDK.run({
-                    apiKey: apiKey,
-                    assistant: assistant,
-                    config: buttonConfig,
-                });
-
-                // Logs connection issues directly to the browser console for us to see
-                vapiInstance.on('error', (e) => {
-                    console.error('Vapi Connection Error:', e);
-                    alert("Connection Error: Check if your Microphone is allowed in the browser settings.");
-                });
+                console.log("Vapi SDK Loaded");
             };
         })(document, "script");
-    </script>
 
+        // 3. AGENT SELECTION LOGIC
+        function selectAgent(type, btn) {
+            // UI Feedback
+            document.querySelectorAll('.node-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Shutdown current session if active
+            if (window.vapiSDK && window.vapiSDK.terminate) {
+                window.vapiSDK.terminate();
+            }
+
+            // Launch the selected Agent
+            window.vapiSDK.run({
+                apiKey: apiKey,
+                assistant: assistantLibrary[type],
+                config: {
+                    position: "bottom-right",
+                    idle: { title: "Talk to " + type, color: "rgb(93, 254, 202)" }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

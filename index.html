@@ -5,56 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wellness Partners - Talk to Riley</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
-        .card { text-align: center; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #1a73e8; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        h1 { color: #2d3436; margin-bottom: 10px; }
+        p { color: #636e72; line-height: 1.6; margin-bottom: 30px; }
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #00b894;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
+    <div class="container">
         <h1>Wellness Partners</h1>
-        <p>Click the button in the bottom corner to speak with Riley.</p>
+        <p><span class="status-dot"></span> Riley is ready to assist you. Click the button below to start your session.</p>
     </div>
 
     <script>
         var vapiInstance = null;
         
-        // 1. YOUR DASHBOARD DATA
-        const assistantId = "PASTE_YOUR_ASSISTANT_ID_HERE"; 
-        const publicApiKey = "PASTE_YOUR_PUBLIC_API_KEY_HERE"; 
+        // 1. YOUR SPECIFIC VAPI DATA
+        const assistant = "e95dca20-93f2-46f0-b014-3a885586fa65"; 
+        const apiKey = "acbbfa66-260e-48ff-bdc5-477b8fdda1e1"; 
 
-        // 2. BUTTON SETTINGS
+        // 2. BUTTON DESIGN
         const buttonConfig = {
             position: "bottom-right",
             offset: "40px",
-            width: "60px",
-            height: "60px",
-            idle: { color: "#5DFECA", type: "pill", title: "Talk to Riley", subtitle: "Wellness Assistant", icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone.svg" },
-            loading: { color: "#5D7CCA", type: "pill", title: "Connecting...", subtitle: "Please wait", icon: "https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg" },
-            active: { color: "#FF4757", type: "pill", title: "Riley is Listening", subtitle: "Click to end", icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg" },
+            width: "65px",
+            height: "65px",
+            idle: {
+                color: "rgb(0, 184, 148)",
+                type: "pill",
+                title: "Talk to Riley",
+                subtitle: "Wellness Assistant",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/mic.svg",
+            },
+            loading: {
+                color: "rgb(9, 132, 227)",
+                type: "pill",
+                title: "Connecting...",
+                subtitle: "Checking Mic",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg",
+            },
+            active: {
+                color: "rgb(214, 48, 49)",
+                type: "pill",
+                title: "Riley is Listening",
+                subtitle: "Click to disconnect",
+                icon: "https://unpkg.com/lucide-static@0.321.0/icons/mic-off.svg",
+            },
         };
 
-        // 3. INITIALIZATION SCRIPT
+        // 3. THE HANDSHAKE
         (function (d, t) {
-            var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            var g = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
             g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-            g.defer = true; g.async = true;
+            g.defer = true;
+            g.async = true;
             s.parentNode.insertBefore(g, s);
 
             g.onload = function () {
                 vapiInstance = window.vapiSDK.run({
-                    apiKey: publicApiKey,
-                    assistant: assistantId,
+                    apiKey: apiKey,
+                    assistant: assistant,
                     config: buttonConfig,
                 });
 
-                // Error Diagnostic
+                // Logs connection issues directly to the browser console for us to see
                 vapiInstance.on('error', (e) => {
-                    console.error('Riley Connection Error:', e);
+                    console.error('Vapi Connection Error:', e);
+                    alert("Connection Error: Check if your Microphone is allowed in the browser settings.");
                 });
             };
         })(document, "script");
     </script>
+
 </body>
 </html>
